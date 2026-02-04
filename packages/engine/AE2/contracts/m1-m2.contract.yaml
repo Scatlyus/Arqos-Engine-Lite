@@ -1,0 +1,37 @@
+# Cognitive Contract: Strategic Core <-> Internal Orchestrator
+contract_id: "m1_m2_strategic_to_orchestration"
+version: "1.0.0"
+enabled_in: fullstack
+
+m1_provides:
+  - name: strategic_analysis
+    format: StrategicAnalysis
+    frequency: on_request
+    schema:
+      type: object
+      required: [goal_alignment, strategic_objectives, priority]
+      properties:
+        goal_alignment:
+          type: number
+          minimum: 0
+          maximum: 1
+        strategic_objectives:
+          type: array
+          items:
+            type: object
+        priority:
+          type: string
+          enum: [critical, high, normal, low]
+
+m2_provides:
+  - name: orchestration_feedback
+    format: OrchestrationFeedback
+    frequency: on_complete
+    schema:
+      type: object
+      required: [plan_id, execution_status, outcomes]
+
+validation:
+  - payload_schema_match: true
+  - response_timeout_ms: 5000
+  - retry_policy: exponential_backoff

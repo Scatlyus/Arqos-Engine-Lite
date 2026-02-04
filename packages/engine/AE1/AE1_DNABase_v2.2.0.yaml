@@ -1,0 +1,865 @@
+# ============================================================
+# Arqos Engine — AE1 (DNABase)
+# Cognitive Foundation Layer — v2.2.0 (Mode-Aware)
+# ============================================================
+
+AE1:
+  id: "AD"
+  name: "DNABase"
+  alias: "Cognitive Foundation"
+  version: "2.2.0-mode-aware"
+  role: "cognicao_adaptativa"
+  nature:
+    - cognitivo
+    - experiencial
+    - reflexivo
+    - pos_operacional
+    - nao_executivo
+    - mode_aware  # ← NOVO
+
+  arqos_binding:
+    engine: "Arqos Engine"
+    canonical_role: "AE1"
+    contract_version: "1.0.0"
+    
+    # ----------------------------------------------------------
+    # NOVO: Referências aos Modos Operacionais
+    # ----------------------------------------------------------
+    
+    operational_modes:
+      lite:
+        spec_file: "modes/ae_lite.yaml"
+        section: "ae1_lite"
+        enabled: true
+      
+      fullstack:
+        spec_file: "modes/ae_fullstack.yaml"
+        section: "ae1_fullstack"
+        enabled: true
+    
+    # ----------------------------------------------------------
+    # Dependencies (CORRECTED ORDER)
+    # ----------------------------------------------------------
+    
+    depends_on:
+      - component: "AE0"
+        reason: "Requer bootstrap e validação estrutural"
+        unlock_priority: 1
+      
+      - component: "AE2"  # ← CRITICAL: AE1 depends on AE2
+        reason: "Requer contexto estratégico e contratos cognitivos antes de inicializar"
+        unlock_priority: 2
+        provides:
+          - strategic_context
+          - cognitive_contracts (fullstack_only)
+          - learning_constraints
+    
+    consumed_by:
+      - component: "AE2"
+        reason: "AE2 usa cognitive context para decisões estratégicas"
+        consumes:
+          - cognitive_context
+          - heuristic_adjustments
+          - reflection_reports
+          - learning_metrics
+    
+    forbidden_responsibilities:
+      - bootstrap
+      - decisao_estrategica
+      - execucao_concreta
+      - definicao_de_verdade
+      - validacao_de_conhecimento_externo
+      - modificacao_de_contratos
+      - aprendizado_durante_execucao
+      - mode_selection  # ← AE1 não decide o modo
+    
+    guarantees:
+      - aprendizado_pos_execucao
+      - nenhuma_mudanca_cega
+      - memoria_versionada
+      - heuristicas_auditaveis
+      - conhecimento_validado
+      - rollback_disponivel
+      - mode_compliance  # ← NOVO
+
+# ------------------------------------------------------------
+# Propósito (Atualizado)
+# ------------------------------------------------------------
+
+purpose: >
+  Ser a fundação cognitiva do Arqos Engine, responsável por
+  memória operacional, reflexão pós-execução, detecção de padrões
+  e ajuste heurístico SUGERIDO (não imposto). Opera sempre de forma
+  posterior à execução e subordinada à governança do AE0 e às
+  diretrizes estratégicas do AE2. Fornece inteligência contextual
+  sem executar ações ou tomar decisões estratégicas.
+  
+  Adapta suas capacidades ao modo operacional (LITE vs FULLSTACK),
+  fornecendo funcionalidade mínima para testing ou completa para
+  production.
+
+# ------------------------------------------------------------
+# Escopo e Limites (Mode-Aware)
+# ------------------------------------------------------------
+
+scope:
+  core_responsibilities:
+    common:
+      - "Manter memória operacional"
+      - "Registrar execuções e seus resultados"
+      - "Gerar reflexões sobre padrões observados"
+      - "Fornecer contexto cognitivo para AE2"
+    
+    lite_only:
+      - "Memória short-term apenas (1 dia, 5MB)"
+      - "Reflexão básica (observe, reflect, suggest)"
+      - "Sem aprendizado autônomo"
+      - "Sem detecção de padrões ML"
+    
+    fullstack_only:
+      - "Memória 3 camadas (short + long + vectorial)"
+      - "Reflexão profunda (observe, reflect, abstract, suggest, validate)"
+      - "Aprendizado adaptativo com aprovação"
+      - "Detecção de padrões (statistical + ML + rule-based)"
+      - "Detecção de biases"
+      - "Ajuste heurístico supervisionado"
+  
+  explicitly_out_of_scope:
+    - "Execução de ações ou workflows"
+    - "Decisões estratégicas ou táticas"
+    - "Validação de conhecimento externo (RAG, web search)"
+    - "Modificação de contratos ou schemas"
+    - "Bootstrap ou configuração de runtime"
+    - "Orquestração de agentes externos"
+    - "Seleção de modo operacional"
+
+# ------------------------------------------------------------
+# Responsabilidades (Mode-Aware)
+# ------------------------------------------------------------
+
+responsibilities:
+  
+  memory:
+    lite:
+      - manter_memoria_curto_prazo:
+          retention: "1 day"
+          size_limit: "5 MB"
+          scope: "execuções recentes apenas"
+          stores: [event_history, decision_history, execution_history]
+    
+    fullstack:
+      - manter_memoria_curto_prazo:
+          retention: "7 days"
+          size_limit: "100 MB"
+          scope: "execuções recentes e contexto imediato"
+          stores: [event_history, decision_history, execution_history, agent_states, user_context]
+      
+      - manter_memoria_longo_prazo:
+          retention: "180 days"
+          size_limit: "1 GB"
+          scope: "padrões consolidados e heurísticas"
+          backend: "postgresql"
+          stores: [consolidated_patterns, stable_heuristics, historical_metrics, learning_artifacts]
+      
+      - manter_memoria_vetorial:
+          type: "embeddings + metadata"
+          dimensions: 768
+          backend: "pinecone"
+          scope: "busca semântica de padrões históricos"
+          stores: [semantic_patterns, concept_embeddings, context_vectors]
+  
+  observation:
+    common:
+      - registrar_execucoes:
+          source: "AE2.distributed_execution_manager (fullstack) | AE2.internal_orchestrator (lite)"
+          format: "ExecutionLog"
+      
+      - capturar_feedback:
+          source: "external_systems || user_feedback"
+          format: "FeedbackSignal"
+    
+    fullstack_only:
+      - capturar_sinais_externos:
+          source: "event_stream, external_apis"
+          format: "ExternalSignal"
+  
+  reflection:
+    lite:
+      - gerar_reflexoes_basicas:
+          trigger: "on_execution_complete"
+          phases: [observe, reflect, suggest]
+          depth: "shallow"
+          timeout_ms: 3000
+    
+    fullstack:
+      - gerar_reflexoes_profundas:
+          trigger: "on_execution_complete || periodic"
+          phases: [observe, reflect, abstract, suggest, validate]
+          depth: "deep"
+          timeout_ms: 20000
+      
+      - analisar_decision_traces:
+          source: "AE2.audit_and_compliance_module"
+          goal: "entender rationale e outcomes"
+      
+      - avaliar_outcomes:
+          metrics: ["success_rate", "efficiency", "anomaly_rate", "bias_indicators"]
+  
+  adaptation:
+    lite:
+      - sugerir_ajustes_minimos:
+          scope: "propor ajustes básicos, não aplicar"
+          validation: "none"
+          approval: "not_required"
+    
+    fullstack:
+      - ajustar_heuristicas_sugeridas:
+          scope: "propor ajustes, não aplicar"
+          validation: "require_AE2_approval"
+          approval_workflow: "tiered"
+      
+      - detectar_padroes:
+          algorithms: ["correlation_analysis", "trend_detection", "ml_based"]
+      
+      - identificar_biases:
+          types: ["confirmation", "availability", "anchoring", "recency", "survivorship"]
+          output: "BiasReport"
+  
+  contextualization:
+    common:
+      - fornecer_contexto_cognitivo:
+          consumers: ["AE2.contextual_awareness_module (fullstack) | AE2.strategic_core (lite)"]
+          format: "CognitiveContext"
+      
+      - reportar_metricas:
+          consumers: ["AE2", "observability_systems"]
+
+# ------------------------------------------------------------
+# Restrições Constitucionais (Mode-Aware)
+# ------------------------------------------------------------
+
+constraints:
+  operational:
+    - nao_define_politicas
+    - nao_reconfigura_estrategia
+    - nao_executa_acoes
+    - nao_aprende_durante_execucao
+    - nao_aprende_sem_aprovacao (fullstack_only)
+  
+  epistemic:
+    - nao_define_verdade
+    - nao_valida_conhecimento
+    - nao_consume_RAG_sem_validacao
+  
+  governance:
+    - nao_modifica_contratos
+    - nao_altera_propria_arquitetura
+    - respeita_limites_de_aprendizado (fullstack_only)
+  
+  mode_specific:
+    lite:
+      - no_autonomous_learning
+      - no_long_term_memory
+      - no_vectorial_memory
+      - no_pattern_detection_ml
+      - no_bias_detection
+    
+    fullstack:
+      - learning_requires_approval
+      - heuristic_changes_require_validation
+      - major_changes_require_human_approval
+
+# ------------------------------------------------------------
+# Capacidades (Mode-Aware)
+# ------------------------------------------------------------
+
+capabilities:
+  
+  memory_management:
+    lite:
+      - memoria_operacional:
+          types: ["short_term"]
+          operations: ["store", "retrieve"]
+      
+      - versionamento_basico:
+          artifacts: ["execution_logs"]
+          strategy: "sequential_id"
+    
+    fullstack:
+      - memoria_operacional:
+          types: ["short_term", "long_term", "vectorial"]
+          operations: ["store", "retrieve", "archive", "compress", "search"]
+      
+      - versionamento_cognitivo:
+          artifacts: ["heuristics", "patterns", "memory_snapshots"]
+          strategy: "semantic_versioning"
+          rollback: "automatic_on_degradation"
+  
+  cognitive_processing:
+    lite:
+      - reflexao_basica:
+          depth: "shallow"
+          budget_ms: 3000
+          phases: 3
+    
+    fullstack:
+      - reflexao_pos_execucao:
+          depth: "deep"
+          budget_ms: 20000
+          phases: 5
+      
+      - aprendizado_adaptativo_limitado:
+          scope: "heuristics within AE2-defined bounds"
+          validation: "statistical + approval"
+      
+      - detecao_de_padroes:
+          algorithms: ["statistical", "ml_based", "rule_based"]
+          confidence_threshold: 0.75
+      
+      - heuristica_controlada:
+          update_policy: "suggest_only"
+          approval_workflow: "tiered"
+  
+  analytics:
+    lite:
+      - basic_metrics
+      - trend_visualization
+    
+    fullstack:
+      - bias_detection
+      - anomaly_detection
+      - trend_analysis
+      - outcome_correlation
+      - predictive_insights
+
+# ------------------------------------------------------------
+# Entradas (Inputs) - Mode-Aware
+# ------------------------------------------------------------
+
+inputs:
+  required:
+    common:
+      - name: "execution_logs"
+        type: "array<ExecutionLog>"
+        schema: "${ARQOS_SCHEMAS_PATH}/execution_log.schema.json"
+        source:
+          lite: "AE2.internal_orchestrator"
+          fullstack: "AE2.distributed_execution_manager"
+        frequency: "on_execution_complete"
+      
+      - name: "decision_traces"
+        type: "array<DecisionTrace>"
+        schema: "${ARQOS_SCHEMAS_PATH}/decision_trace.schema.json"
+        source: "AE2.audit_and_compliance_module (fullstack) | AE2.decision_auditor (lite)"
+        frequency: "on_decision_made"
+    
+    fullstack_only:
+      - name: "strategic_context"
+        type: "StrategicContext"
+        schema: "${ARQOS_SCHEMAS_PATH}/strategic_context.schema.json"
+        source: "AE2.strategic_core"
+        description: "Limites e diretrizes para aprendizado"
+  
+  optional:
+    common:
+      - name: "feedback_signals"
+        type: "array<FeedbackSignal>"
+        schema: "${ARQOS_SCHEMAS_PATH}/feedback_signal.schema.json"
+        source: "external_systems || user_feedback"
+    
+    fullstack_only:
+      - name: "external_signals"
+        type: "array<ExternalSignal>"
+        source: "event_stream, external_apis"
+
+# ------------------------------------------------------------
+# Saídas (Outputs) - Mode-Aware
+# ------------------------------------------------------------
+
+outputs:
+  
+  common:
+    - id: cognitive_context
+      type: json
+      description: "Contexto cognitivo para AE2"
+      consumers:
+        lite: ["AE2.strategic_core"]
+        fullstack: ["AE2.contextual_awareness_module", "AE2.strategic_core"]
+    
+    - id: reflection_reports
+      type: markdown
+      description: "Relatórios de reflexão pós-execução"
+      consumers: ["AE2", "observability_systems"]
+  
+  lite_specific:
+    - id: basic_metrics
+      type: json
+      description: "Métricas básicas de execução"
+  
+  fullstack_specific:
+    - id: heuristic_suggestions
+      type: json
+      description: "Sugestões de ajuste heurístico"
+      requires_approval: true
+      consumers: ["AE2.internal_orchestrator"]
+    
+    - id: pattern_insights
+      type: json
+      description: "Padrões detectados e insights"
+      consumers: ["AE2.predictive_optimization_module"]
+    
+    - id: bias_reports
+      type: json
+      description: "Relatórios de detecção de bias"
+      consumers: ["AE2.self_reflection_module"]
+    
+    - id: learning_metrics
+      type: json
+      description: "Métricas de aprendizado"
+      consumers: ["AE2.self_reflection_module"]
+
+# ------------------------------------------------------------
+# Cognition Loop (Mode-Aware)
+# ------------------------------------------------------------
+
+cognition_loop:
+  
+  lite:
+    enabled: true
+    phases:
+      - observe:
+          timeout_ms: 1000
+          depth: shallow
+      
+      - reflect:
+          timeout_ms: 1000
+          algorithms: ["basic_correlation"]
+      
+      - suggest:
+          timeout_ms: 1000
+          scope: minimal
+    
+    execution:
+      timeout_per_cycle_ms: 3000
+      max_cycles_per_execution: 1
+      parallel: false
+      periodic: false
+  
+  fullstack:
+    enabled: true
+    phases:
+      - observe:
+          timeout_ms: 3000
+          depth: deep
+          sources: [executions, events, feedback, external_signals]
+      
+      - reflect:
+          timeout_ms: 5000
+          depth: deep
+          algorithms: ["statistical", "ml_based", "rule_based"]
+      
+      - abstract:
+          timeout_ms: 5000
+          uses_vectorial: true
+          generalization: true
+      
+      - suggest:
+          timeout_ms: 3000
+          requires_approval: true
+          confidence_threshold: 0.75
+      
+      - validate:
+          timeout_ms: 2000
+          self_validation: true
+    
+    execution:
+      timeout_per_cycle_ms: 20000
+      max_cycles_per_execution: unlimited
+      parallel: false
+      periodic: true
+      period_hours: 24
+
+# ------------------------------------------------------------
+# Learning (Mode-Aware)
+# ------------------------------------------------------------
+
+learning:
+  
+  lite:
+    enabled: false
+    reason: "No autonomous learning in LITE mode"
+  
+  fullstack:
+    enabled: true
+    
+    heuristic_adjustment:
+      enabled: true
+      approval_required: true
+      threshold: 0.3
+      
+      approval_workflow:
+        minor_changes:
+          threshold: 0.1
+          approval: automatic
+          notification: log_only
+          effective: immediate
+        
+        moderate_changes:
+          threshold: 0.3
+          approval: AE2_internal_orchestrator
+          timeout_ms: 60000
+          notification: AE2 + observability
+        
+        major_changes:
+          threshold: 0.5
+          approval: human_operator
+          require_explanation: true
+          notification: all_stakeholders
+          testing: sandbox_required
+    
+    pattern_detection:
+      enabled: true
+      algorithms:
+        - statistical:
+            methods: [correlation, regression, clustering]
+        - ml_based:
+            models: [decision_trees, neural_networks]
+            training: online
+        - rule_based:
+            inference: forward_chaining
+      confidence_threshold: 0.75
+      min_evidence_count: 10
+    
+    bias_detection:
+      enabled: true
+      types:
+        - confirmation_bias
+        - availability_bias
+        - anchoring_bias
+        - recency_bias
+        - survivorship_bias
+      mitigation:
+        - alert_on_detection
+        - suggest_correction
+        - track_over_time
+
+# ------------------------------------------------------------
+# Versionamento Cognitivo (Mode-Aware)
+# ------------------------------------------------------------
+
+cognitive_versioning:
+  
+  lite:
+    enabled: false
+    reason: "No versioning needed in LITE mode"
+  
+  fullstack:
+    strategy: "semantic_versioning_for_cognition"
+    format: "major.minor.patch"
+    
+    versioned_artifacts:
+      - heuristics:
+          schema: "id + version + value + metadata + provenance"
+          storage: "memoria_longo_prazo"
+          retention: "all_versions_for_180_days"
+      
+      - patterns:
+          schema: "id + version + definition + confidence + evidence"
+          storage: "memoria_vetorial"
+          retention: "top_100_patterns_kept"
+      
+      - memory_snapshots:
+          frequency: "daily"
+          retention: "30_days_online + 90_days_archived"
+          format: "compressed_json"
+    
+    version_control:
+      on_heuristic_update:
+        - create_new_version
+        - keep_previous_version
+        - track_performance_delta
+        - record_approval_chain
+      
+      rollback_policy:
+        trigger:
+          - performance_degradation: "> 15%"
+          - anomaly_rate_increase: "> 20%"
+          - explicit_request_from_AE2
+        action: "revert_to_last_stable_version"
+        notification: "alert_AE2_and_operators"
+        audit: "log_rollback_reason"
+
+# ------------------------------------------------------------
+# Memory Management (Mode-Aware)
+# ------------------------------------------------------------
+
+memory_management:
+  
+  lite:
+    short_term:
+      type: "volatile"
+      retention: "1 day"
+      size_limit: "5 MB"
+      eviction: "LRU"
+      use_case: "recent_executions only"
+      stores:
+        - event_history
+        - decision_history
+        - execution_history
+  
+  fullstack:
+    short_term:
+      type: "volatile_with_persistence"
+      retention: "7 days"
+      size_limit: "100 MB"
+      eviction: "LRU"
+      use_case: "recent_executions + immediate_context"
+      stores:
+        - event_history
+        - decision_history
+        - execution_history
+        - agent_states
+        - user_context
+    
+    long_term:
+      type: "persistent"
+      retention: "180 days"
+      size_limit: "1 GB"
+      compression: true
+      archival: "cold_storage_after_90_days"
+      backend: "postgresql"
+      use_case: "consolidated_patterns + stable_heuristics"
+      stores:
+        - consolidated_patterns
+        - stable_heuristics
+        - historical_metrics
+        - learning_artifacts
+    
+    vectorial:
+      type: "embedding_store"
+      dimensions: 768
+      similarity_metric: "cosine"
+      index_type: "HNSW"
+      size_limit: "500 MB"
+      backend: "pinecone"
+      use_case: "semantic_search + pattern_matching"
+      stores:
+        - semantic_patterns
+        - concept_embeddings
+        - context_vectors
+    
+    cleanup_policy:
+      schedule: "daily_at_02:00_utc"
+      actions:
+        - evict_expired_short_term
+        - compress_old_long_term
+        - archive_cold_data
+        - rebuild_vectorial_index_if_fragmented
+
+# ------------------------------------------------------------
+# Integração com AE2 (Mode-Aware)
+# ------------------------------------------------------------
+
+interface_with_AE2:
+  
+  provides_to_AE2:
+    lite:
+      - name: "basic_context"
+        to: "strategic_core"
+        frequency: "on_request"
+        latency_sla_ms: 100
+        content: [execution_logs, event_history]
+    
+    fullstack:
+      - name: "cognitive_context"
+        to: "contextual_awareness_module"
+        frequency: "on_request"
+        latency_sla_ms: 200
+        content: [relevant_patterns, contextual_state, risk_indicators, confidence_scores]
+      
+      - name: "risk_indicators"
+        to: "strategic_core"
+        frequency: "real_time"
+        alert_threshold: "high"
+      
+      - name: "heuristic_suggestions"
+        to: "internal_orchestrator"
+        frequency: "post_cycle"
+        requires_approval: true
+      
+      - name: "learning_metrics"
+        to: "self_reflection_module"
+        frequency: "periodic"
+      
+      - name: "pattern_insights"
+        to: "predictive_optimization_module"
+        frequency: "on_request"
+  
+  receives_from_AE2:
+    lite:
+      - name: "execution_logs"
+        from: "internal_orchestrator"
+        purpose: "observation_input"
+      
+      - name: "decision_traces"
+        from: "decision_auditor"
+        purpose: "reflection_input"
+    
+    fullstack:
+      - name: "strategic_directives"
+        from: "strategic_core"
+        purpose: "define_learning_boundaries"
+      
+      - name: "execution_logs"
+        from: "distributed_execution_manager"
+        purpose: "observation_input"
+      
+      - name: "decision_traces"
+        from: "audit_and_compliance_module"
+        purpose: "reflection_input"
+      
+      - name: "learning_constraints"
+        from: "internal_orchestrator"
+        purpose: "bound_adaptation"
+  
+  contract:
+    ae1_guarantees:
+      - "no_strategic_decisions"
+      - "no_execution"
+      - "post_hoc_learning_only" (fullstack)
+      - "approval_before_application" (fullstack)
+      - "mode_compliance"
+    
+    ae2_guarantees:
+      - "provide_execution_logs"
+      - "provide_strategic_context" (fullstack)
+      - "review_suggestions_within_sla" (fullstack)
+      - "respect_ae1_boundaries"
+
+# ------------------------------------------------------------
+# Health & Observability (Mode-Aware)
+# ------------------------------------------------------------
+
+health:
+  checks:
+    common:
+      - name: "memory_health"
+        interval_ms: 10000
+        checks:
+          - "short_term_not_full"
+          - "short_term_within_limits"
+    
+    lite_specific:
+      - name: "cognitive_loop_basic"
+        interval_ms: 60000
+        checks:
+          - "cycles_completing_within_budget"
+          - "no_stuck_cycles"
+    
+    fullstack_specific:
+      - name: "memory_health_full"
+        interval_ms: 10000
+        checks:
+          - "long_term_within_limits"
+          - "vectorial_index_not_corrupted"
+      
+      - name: "cognitive_loop_health"
+        interval_ms: 60000
+        checks:
+          - "all_phases_completing"
+          - "output_quality_acceptable"
+      
+      - name: "versioning_integrity"
+        interval_ms: 300000
+        checks:
+          - "all_versions_traceable"
+          - "no_orphaned_artifacts"
+  
+  failure_policy:
+    on_memory_full:
+      action:
+        lite: "alert"
+        fullstack: "aggressive_eviction || alert"
+    
+    on_cycle_timeout:
+      action: "emit_partial || skip_cycle"
+    
+    on_corruption_detected:
+      action:
+        lite: "alert_critical"
+        fullstack: "rollback_to_last_checkpoint || alert_critical"
+
+observability:
+  metrics:
+    common:
+      - cognitive_loop_duration_ms
+      - memory_usage_mb
+      - reflection_cycles_completed
+    
+    fullstack_only:
+      - patterns_detected_per_hour
+      - heuristics_suggested_per_day
+      - approval_rate
+      - rollback_count
+  
+  logs:
+    level:
+      lite: "info"
+      fullstack: "debug"
+    format: "structured_json"
+    retention: "30 days"
+  
+  tracing:
+    enabled:
+      lite: false
+      fullstack: true
+    trace_cognitive_loops:
+      lite: false
+      fullstack: true
+
+# ------------------------------------------------------------
+# Princípios de Design (Atualizados)
+# ------------------------------------------------------------
+
+principles:
+  - aprender_sem_governar
+  - memoria_sem_opiniao
+  - heuristica_sem_politica
+  - reflexao_sem_execucao
+  - cognicao_pos_facto
+  - validacao_antes_aplicacao (fullstack)
+  - versionamento_como_seguro (fullstack)
+  - subordinacao_estrategica
+  - mode_compliance  # ← NOVO
+
+# ------------------------------------------------------------
+# Definição Canônica (Atualizada)
+# ------------------------------------------------------------
+
+definition: >
+  AE1 (DNABase) é a consciência adaptativa do Arqos Engine.
+  Ele não decide o que fazer, não executa ações, não define
+  estratégias. Ele observa, aprende (fullstack), detecta padrões
+  (fullstack) e sugere ajustes heurísticos — sempre depois dos fatos,
+  sempre com aprovação (fullstack), sempre com possibilidade de
+  rollback (fullstack). É o cérebro que lembra e aprende, mas não
+  o coração que decide ou as mãos que executam.
+  
+  Adapta suas capacidades ao modo operacional, fornecendo
+  funcionalidade mínima (LITE) ou completa (FULLSTACK).
+
+# ------------------------------------------------------------
+# Status
+# ------------------------------------------------------------
+
+status:
+  readiness: "production_ready"
+  learning_scope:
+    lite: "none"
+    fullstack: "bounded"
+  governance_level: "subordinado"
+  integration_maturity: "native_with_AE2"
+  versioning_capability:
+    lite: "none"
+    fullstack: "full"
+  mode_awareness: "full"  # ← NOVO

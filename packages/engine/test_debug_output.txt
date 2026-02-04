@@ -1,0 +1,13 @@
+FAIL tests/ae0.harbor.failfast.test.ts
+  ÔùÅ Test suite failed to run
+
+    AE0/bootstrap.ts:11:28 - error TS2307: Cannot find module '@arqos/utils' or its corresponding type declarations.
+
+    11 import { ArqosError } from "@arqos/utils";
+                                  ~~~~~~~~~~~~~~
+
+Test Suites: 1 failed, 1 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        2.734 s
+Ran all test suites matching /tests\\ae0.harbor.failfast.test.ts/i.

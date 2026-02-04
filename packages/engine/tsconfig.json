@@ -1,0 +1,23 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "rootDir": ".",
+        "outDir": "./dist",
+        "baseUrl": ".",
+        "paths": {
+            "@arqos/engine/*": [
+                "./*"
+            ],
+            "@arqos/utils": [
+                "../utils/src/index.ts"
+            ]
+        }
+    },
+    "include": [
+        "**/*.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}

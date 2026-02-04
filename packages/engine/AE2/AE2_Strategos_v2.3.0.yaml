@@ -1,0 +1,425 @@
+# ============================================================
+# Arqos Engine — AE2 (Strategos Maestro) - COMPLETE
+# Strategic Orchestrator — v2.3.0 (Mode-Aware)
+# ============================================================
+
+# [Part 1 content would be here - including modules, contracts, etc]
+# This file continues from Part 1...
+
+# ============================================================
+# Decision Policy (Mode-Aware)
+# ============================================================
+
+decision_policy:
+  
+  lite:
+    complexity: minimal
+    deterministic: true
+    timeout_ms: 3000
+    max_depth: 2
+    
+    decision_criteria:
+      - objective_alignment
+      - resource_availability
+    
+    disabled_criteria:
+      - risk_assessment
+      - predictive_modeling
+      - multi_scenario_evaluation
+    
+    decision_strategies:
+      - rule_based
+  
+  fullstack:
+    complexity: adaptive
+    deterministic: false
+    timeout_ms: 15000
+    max_depth: unlimited
+    
+    decision_criteria:
+      - objective_alignment
+      - resource_availability
+      - risk_assessment
+      - predictive_modeling
+      - multi_scenario_evaluation
+      - historical_patterns
+      - confidence_thresholds
+    
+    decision_strategies:
+      - rule_based
+      - ml_based
+      - hybrid
+      - consensus
+      - weighted_voting
+
+# ============================================================
+# Event Handling (Mode-Aware)
+# ============================================================
+
+event_handling:
+  
+  lite:
+    consumes:
+      - runtime_start
+      - health_check
+      - execution_complete
+    
+    processing:
+      mode: synchronous
+      queue: fifo
+      batch: false
+    
+    routing_rules:
+      runtime_start:
+        plan: basic_validation
+        priority: high
+      
+      health_check:
+        plan: health_summary
+        priority: normal
+      
+      execution_complete:
+        plan: record_and_reflect
+        priority: normal
+  
+  fullstack:
+    consumes: all_event_types
+    
+    processing:
+      mode: asynchronous
+      queue: priority_queue
+      batch: true
+      batch_size: 100
+      batch_timeout_ms: 5000
+    
+    priority_routing:
+      critical:
+        latency_sla_ms: 100
+        preempt: true
+      
+      high:
+        latency_sla_ms: 500
+        preempt: false
+      
+      normal:
+        latency_sla_ms: 2000
+        preempt: false
+      
+      low:
+        latency_sla_ms: 10000
+        preempt: false
+
+# ============================================================
+# Integration with AE1 (Mode-Aware)
+# ============================================================
+
+integration_with_ae1:
+  
+  provides_to_ae1:
+    lite:
+      - name: basic_execution_logs
+        format: ExecutionLog
+        frequency: on_complete
+        source: internal_orchestrator
+    
+    fullstack:
+      - name: strategic_directives
+        format: StrategicDirectives
+        frequency: on_request
+        source: strategic_core
+      
+      - name: execution_logs
+        format: ExecutionLog
+        frequency: on_complete
+        source: distributed_execution_manager
+      
+      - name: decision_traces
+        format: DecisionTrace
+        frequency: on_decision
+        source: audit_and_compliance_module
+      
+      - name: learning_constraints
+        format: LearningConstraints
+        frequency: periodic
+        source: internal_orchestrator
+  
+  receives_from_ae1:
+    lite:
+      - name: basic_context
+        format: BasicContext
+        source: AE1
+        purpose: minimal_contextualization
+    
+    fullstack:
+      - name: cognitive_context
+        format: CognitiveContext
+        source: AE1
+        purpose: decision_enhancement
+      
+      - name: risk_indicators
+        format: RiskIndicators
+        source: AE1
+        purpose: risk_awareness
+      
+      - name: heuristic_suggestions
+        format: HeuristicSuggestions
+        source: AE1
+        purpose: strategy_refinement
+        requires_review: true
+      
+      - name: learning_metrics
+        format: LearningMetrics
+        source: AE1
+        purpose: performance_tracking
+      
+      - name: pattern_insights
+        format: PatternInsights
+        source: AE1
+        purpose: predictive_optimization
+
+# ============================================================
+# Integration with AE3 (Mode-Aware)
+# ============================================================
+
+integration_with_ae3:
+  
+  provides_to_ae3:
+    lite:
+      - name: basic_orchestration_plan
+        format: simplified
+        contains: [tool_name, tool_input, timeout]
+        source: internal_orchestrator
+    
+    fullstack:
+      - name: orchestration_plan
+        format: comprehensive
+        contains:
+          - tool_sequence
+          - dependencies
+          - timeout_budget
+          - rollback_policy
+          - priority
+        source: distributed_execution_manager
+      
+      - name: execution_context
+        format: rich
+        contains:
+          - user_context
+          - cognitive_context_from_ae1
+          - strategic_directives
+          - resource_limits
+        source: contextual_awareness_module
+  
+  receives_from_ae3:
+    common:
+      - name: execution_results
+        format:
+          lite: simple
+          fullstack: comprehensive
+        contains:
+          lite: [tool_output, success, duration_ms]
+          fullstack: [outputs, performance_metrics, errors, warnings, partial_results]
+      
+      - name: tool_availability
+        format: real_time
+        contains:
+          - tool_health_status
+          - load_metrics (fullstack_only)
+          - estimated_latency (fullstack_only)
+
+# ============================================================
+# Health & Observability (Mode-Aware)
+# ============================================================
+
+health:
+  checks:
+    common:
+      - name: module_responsiveness
+        interval_ms:
+          lite: 10000
+          fullstack: 5000
+      
+      - name: decision_latency
+        interval_ms: 30000
+        threshold_ms:
+          lite: 5000
+          fullstack: 20000
+    
+    lite_specific:
+      - name: minimal_modules_health
+        interval_ms: 30000
+        checks:
+          - strategic_core_responsive
+          - internal_orchestrator_responsive
+          - decision_auditor_responsive
+    
+    fullstack_specific:
+      - name: all_modules_health
+        interval_ms: 30000
+        checks:
+          - all_8_modules_responsive
+          - no_deadlocks_between_modules
+          - contracts_still_valid
+      
+      - name: cognitive_contracts_health
+        interval_ms: 60000
+        checks:
+          - all_8_contracts_validated
+          - no_contract_violations
+          - payload_types_match
+      
+      - name: ae1_communication
+        interval_ms: 60000
+        checks:
+          - can_query_ae1
+          - ae1_responds_within_sla
+  
+  failure_policy:
+    on_module_failure:
+      lite: "degrade_gracefully"
+      fullstack: "attempt_failover"
+    
+    on_contract_violation:
+      lite: "not_applicable"
+      fullstack: "alert_and_investigate"
+
+observability:
+  metrics:
+    common:
+      - decisions_made_per_minute
+      - decision_latency_ms
+      - orchestration_plan_generation_time_ms
+    
+    lite_specific:
+      - modules_enabled: 3
+      - cognitive_contracts_enabled: 0
+    
+    fullstack_specific:
+      - modules_enabled: 8
+      - cognitive_contracts_active: 8
+      - module_coordination_overhead_ms
+      - strategic_alignment_score
+      - agent_dispatch_latency_ms
+  
+  logs:
+    level:
+      lite: info
+      fullstack: debug
+    format: structured_json
+    retention: 30_days
+  
+  tracing:
+    enabled:
+      lite: false
+      fullstack: true
+    trace_decision_flows:
+      lite: false
+      fullstack: true
+    trace_module_communication:
+      lite: false
+      fullstack: true
+
+# ============================================================
+# Performance Targets (Mode-Aware)
+# ============================================================
+
+performance:
+  
+  lite:
+    decision_latency_ms: "<3000"
+    orchestration_overhead_ms: "<500"
+    memory_footprint_mb: "<20"
+  
+  fullstack:
+    decision_latency_ms: "<15000"
+    orchestration_overhead_ms: "<2000"
+    memory_footprint_mb: "<500"
+    
+    sla:
+      availability: "99.9%"
+      p50_latency_ms: 5000
+      p95_latency_ms: 12000
+      p99_latency_ms: 18000
+
+# ============================================================
+# Regra de Ouro de Governança
+# ============================================================
+
+governance_rule:
+  description: "Nenhum módulo legacy executa diretamente decisões estratégicas"
+  
+  priority_flow:
+    - strategic_core: "Decide estratégia"
+    - internal_orchestrator: "Coordena execução"
+    - legacy_pipeline: "Executor compatível apenas"
+  
+  enforcement:
+    - "Toda decisão crítica passa por strategic_core"
+    - "Toda coordenação passa por internal_orchestrator"
+    - "Pipeline legacy atua apenas como executor compatível"
+
+# ============================================================
+# Guarantees (Mode-Aware)
+# ============================================================
+
+guarantees:
+  common:
+    - decisao_sem_execucao
+    - orquestracao_sem_acoplamento
+    - auditoria_completa
+    - mode_compliance
+  
+  lite_specific:
+    - comportamento_deterministico
+    - decisoes_simples
+    - sem_cognitive_contracts
+  
+  fullstack_specific:
+    - estrategia_sem_conhecimento
+    - cognitive_contracts_validated
+    - high_availability
+    - fault_tolerance
+    - adaptive_behavior
+
+# ============================================================
+# Princípios de Design (Atualizados)
+# ============================================================
+
+principles:
+  - contrato_acima_de_codigo
+  - falha_antes_da_decisao
+  - orquestracao_sem_inteligencia_propria
+  - isolamento_por_padrao
+  - governanca_antes_da_execucao
+  - reproducibilidade (lite_only)
+  - observabilidade
+  - dependencias_explicitas
+  - mode_awareness
+  - modularidade_cognitiva (fullstack_only)
+
+# ============================================================
+# Definição Canônica (Atualizada)
+# ============================================================
+
+definition: >
+  AE2 (Strategos Maestro) é o núcleo estratégico e orquestrador do
+  Arqos Engine. Ele não executa ações, não armazena conhecimento.
+  Ele decide estratégia, coordena módulos internos, orquestra agentes
+  externos, e audita decisões. Adapta suas capacidades ao modo
+  operacional: LITE (3 módulos, sem contratos cognitivos) ou FULLSTACK
+  (8 módulos, contratos cognitivos completos).
+
+# ============================================================
+# Status
+# ============================================================
+
+status:
+  readiness: "production_ready"
+  governance_level: "soberano"
+  orchestration_capability:
+    lite: "minimal"
+    fullstack: "complete"
+  cognitive_contracts:
+    lite: "none"
+    fullstack: "all_8_active"
+  mode_awareness: "full"

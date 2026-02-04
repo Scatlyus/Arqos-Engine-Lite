@@ -1,0 +1,16 @@
+contract_id: "output_v1"
+version: "1.0.0"
+
+receives:
+  - name: engine_output
+    format: raw
+    source: Arqos
+    purpose: Result delivery
+    schema:
+      type: object
+      required: [response, metadata]
+      properties:
+        response:
+          type: string
+        metadata:
+          type: object

@@ -1,0 +1,15 @@
+contract_id: "input_v1"
+version: "1.0.0"
+
+provides:
+  - name: user_input
+    format: raw
+    frequency: on_request
+    schema:
+      type: object
+      required: [user_message, context]
+      properties:
+        user_message:
+          type: string
+        context:
+          type: object

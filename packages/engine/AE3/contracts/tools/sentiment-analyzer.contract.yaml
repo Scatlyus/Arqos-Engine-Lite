@@ -1,0 +1,45 @@
+# Tool Contract: SentimentAnalyzer
+contract_id: "tool_t27_sentiment_analyzer"
+version: "1.0.0"
+
+tool_id: "T27"
+name: "SentimentAnalyzer"
+description: "Analyze sentiment polarity and tone with confidence."
+phase: processa
+
+enabled_in: fullstack
+
+timeout_ms: 2000
+
+input_schema:
+  type: object
+  required: [text]
+  properties:
+    text:
+      type: string
+    language:
+      type: string
+      enum: [pt, en, es]
+    domain:
+      type: string
+    options:
+      type: object
+      properties:
+        detect_sarcasm:
+          type: boolean
+
+output_schema:
+  type: object
+  required: [polarity, score, confidence]
+  properties:
+    polarity:
+      type: string
+      enum: [positive, neutral, negative]
+    score:
+      type: number
+    intensity:
+      type: number
+    tone:
+      type: string
+    confidence:
+      type: number

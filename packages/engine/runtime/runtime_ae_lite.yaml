@@ -1,0 +1,49 @@
+# runtime_ae_lite.yaml
+runtime:
+  id: arqos-runtime-lite
+  version: 2.0.0
+  mode: lite
+  environment: local
+  
+  global_timeout:
+    enabled: true
+    timeout_ms: 60000
+  
+ae0:
+  mode: lite
+  include: AE0_LITE_spec
+
+ae1:
+  mode: lite
+  include: AE1_LITE_spec
+
+ae2:
+  mode: lite
+  include: AE2_LITE_spec
+
+ae3:
+  mode: lite
+  include: AE3_LITE_spec
+
+execution_flow:
+  trigger: manual
+  validation: basic
+  steps:
+    - ae2_decision
+    - ae3_execution
+    - ae1_reflection
+
+observability:
+  logging:
+    level: info
+  metrics:
+    enabled: true
+    backend: console
+  diagnostics:
+    enabled: true
+
+exit_conditions:
+  success:
+    - ae0.status == "ok"
+    - ae2.decision_made == true
+    - ae3.execution_success == true

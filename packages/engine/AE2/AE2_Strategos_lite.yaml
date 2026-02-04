@@ -1,0 +1,60 @@
+ae2_Strategos_lite:
+  id: "AE2-LITE"
+  version: "2.2.0-lite"
+  
+  orchestration:
+    mode: internal_flow_minimal
+    execution_style: sequential
+    allow_parallel: false
+    max_concurrent_agents: 1
+  
+  strategic_objectives:
+    - system_validation
+    - basic_orchestration
+  
+  modules:
+    enabled:
+      - strategic_core:
+          features: [goal_alignment, priority_resolution]
+          disabled: [long_horizon_planning, conflict_resolution]
+      
+      - internal_orchestrator:
+          features: [module_coordination, execution_ordering]
+          disabled: [failover_logic, concurrency_control]
+      
+      - decision_auditor:
+          features: [decision_logging, basic_compliance]
+          disabled: [explainability_reports, deep_analysis]
+    
+    disabled:
+      - distributed_execution_manager:
+          reason: "Minimal orchestration only"
+          fallback: "internal_orchestrator handles basic execution"
+      
+      - contextual_awareness_module:
+          reason: "No environmental analysis needed"
+          fallback: "Basic context from inputs only"
+      
+      - predictive_optimization_module:
+          reason: "No scenario simulation needed"
+      
+      - self_reflection_module:
+          reason: "No learning in LITE mode"
+      
+      - evolution_manager:
+          reason: "No versioning in LITE mode"
+  
+  cognitive_contracts:
+    enabled: false  # ← No internal module contracts in LITE
+    reason: "Only 3 modules active, simplified communication"
+  
+  decision_policy:
+    complexity: minimal
+    deterministic: true
+    timeout_ms: 3000
+    max_depth: 2
+  
+  guarantees:
+    no_execution: true
+    orchestration_only: true
+    deterministic_behavior: true

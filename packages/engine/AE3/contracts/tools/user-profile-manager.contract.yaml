@@ -1,0 +1,58 @@
+# Tool Contract: UserProfileManager
+contract_id: "tool_t7_user_profile_manager"
+version: "1.0.0"
+
+tool_id: "T7"
+name: "UserProfileManager"
+description: "Manage user profiles with versioning, consent, and change history."
+phase: colhe
+
+enabled_in: fullstack
+
+timeout_ms: 3000
+
+input_schema:
+  type: object
+  required: [action, user_id]
+  properties:
+    action:
+      type: string
+      enum: [get, create, update, delete, merge]
+    user_id:
+      type: string
+    profile_data:
+      type: object
+    consent:
+      type: object
+    version:
+      type: number
+    fields:
+      type: array
+      items:
+        type: string
+
+output_schema:
+  type: object
+  required: [status]
+  properties:
+    status:
+      type: string
+      enum: [ok, not_found, conflict]
+    profile:
+      type: object
+    version:
+      type: number
+    changes:
+      type: array
+      items:
+        type: object
+        properties:
+          field:
+            type: string
+          from:
+            type: string
+          to:
+            type: string
+
+optional_fields:
+  requires_approval: true

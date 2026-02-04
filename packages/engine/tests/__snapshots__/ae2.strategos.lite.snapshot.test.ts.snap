@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`entrada X gera plano determinístico no LITE 1`] = `
+{
+  "id": "plan-sumarizar-lite",
+  "integrity_hash": "ae2-sha256-placeholder",
+  "sequence": [
+    {
+      "action": "process",
+      "step": 1,
+      "tool_name": "InsightSummarizer",
+    },
+  ],
+  "strategy": "linear",
+}
+`;

@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": [
+    "id",
+    "version",
+    "role",
+    "depends_on",
+    "guarantees"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "enum": [
+        "AE1"
+      ]
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "cognicao_adaptativa"
+      ]
+    },
+    "depends_on": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "component",
+          "reason"
+        ],
+        "properties": {
+          "component": {
+            "enum": [
+              "AE0",
+              "AE2"
+            ]
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "guarantees": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

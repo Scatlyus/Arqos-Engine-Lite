@@ -1,0 +1,41 @@
+ae1_configuration:
+  mode: fullstack
+
+  memory:
+    short_term:
+      retention_days: 7
+      max_events: 10000
+
+    long_term:
+      retention_days: 180
+      max_events: 1000000
+
+    vectorial:
+      provider: pinecone
+      api_key: ${PINECONE_API_KEY}
+      index_name: ae1-memory
+      dimensions: 1536
+
+  cognition_loop:
+    frequency_ms: 60000
+    phases: [observe, reflect, abstract, suggest]
+
+  pattern_detection:
+    algorithms:
+      - statistical
+      - ml_based
+      - rule_based
+
+    thresholds:
+      confidence_min: 0.7
+      support_min: 3
+
+  heuristics:
+    auto_versioning: true
+    semantic_versioning: true
+    rollback_on_degradation: true
+
+  learning:
+    enabled: true
+    feedback_window_hours: 24
+    min_samples_for_learning: 100

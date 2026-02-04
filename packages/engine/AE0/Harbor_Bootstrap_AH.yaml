@@ -1,0 +1,480 @@
+# ============================================================
+# Arqos Engine — AE0 (EBA)
+# Executive Bootstrap Agent — v1.2 (AE1-Aware)
+# ============================================================
+
+AE0:
+  id: "AH"
+  name: "Harbor Bootstrap"
+  alias: "EBA"
+  version: "1.2.0"
+  role: "bootstrap_e_acoplamento"
+  nature:
+    - operacional
+    - deterministico
+    - nao_cognitivo
+    - stateless_entre_runs
+    - ae1_aware  # ← NOVO
+
+  arqos_binding:
+    engine: "Arqos Engine"
+    canonical_role: "AE0"
+    contract_version: "1.0.0"
+    
+    governs:
+      - component: "AE2"
+        unlock_condition: "mode_allows && post_validation"
+        unlock_priority: 1  # ← NOVO: AE2 primeiro!
+      
+      - component: "AE1"
+        unlock_condition: "ae2_ready && post_validation"
+        unlock_priority: 2  # ← NOVO: AE1 depois!
+        pre_unlock_checks:  # ← NOVO
+          - ae1_modules_available
+          - ae1_inputs_prepared
+          - ae1_contracts_validated
+    
+    forbidden_responsibilities:
+      - decisao_estrategica
+      - aprendizagem
+      - interpretacao_de_conhecimento
+      - acesso_a_RAG
+      - orquestracao_cognitiva  # ← NOVO
+    
+    guarantees:
+      - subida_controlada
+      - contratos_validos
+      - isolamento_cognitivo
+      - falha_segura
+      - reproducibilidade
+      - dependencias_resolvidas  # ← NOVO
+
+# ------------------------------------------------------------
+# Responsabilidades (Expandidas)
+# ------------------------------------------------------------
+
+responsibilities:
+  core:
+    - ler_kit_yaml_from_path
+    - validar_schemas_contra_spec
+    - validar_contratos_estruturais
+    - resolver_modo_via_lookup
+    - resolver_ordem_de_dependencias  # ← NOVO
+    - inicializar_runtime_isolado
+    - bind_com_projeto_host
+    - expor_interfaces_tipadas
+    
+  ae1_specific:  # ← NOVO
+    - preparar_ambiente_ae1
+    - validar_modulos_ae1
+    - validar_contratos_internos_ae1
+    - resolver_modo_orquestracao_ae1
+    - inicializar_state_store
+    - inicializar_event_stream
+    
+  reliability:
+    - health_check_continuo
+    - circuit_breaker
+    - fail_safe_com_diagnostico
+
+# ------------------------------------------------------------
+# Entradas (Inputs) - AE1-Aware
+# ------------------------------------------------------------
+
+inputs:
+  required_env:
+    - name: "ARQOS_MODE"
+      type: "enum[lite|standard|strict]"
+      default: "standard"
+    
+    - name: "ARQOS_KIT_PATH"
+      type: "filepath"
+      description: "Caminho para kit.yaml"
+    
+    - name: "ARQOS_SCHEMAS_PATH"
+      type: "dirpath"
+      description: "Diretório com schemas de validação"
+    
+    # ← NOVO: Inputs que AE1 espera
+    - name: "ARQOS_STATE_STORE_PATH"
+      type: "filepath"
+      description: "Localização do state_store para AE1"
+      default: "/tmp/arqos_state.json"
+    
+    - name: "ARQOS_EVENT_STREAM_ENABLED"
+      type: "boolean"
+      description: "Se AE1 deve receber event_stream"
+      default: true
+  
+  optional_env:
+    - name: "ARQOS_BOOTSTRAP_TIMEOUT_MS"
+      type: "integer"
+      default: 10000
+    
+    - name: "ARQOS_AE1_ORCHESTRATION_MODE"
+      type: "enum[legacy|internal_flow|auto]"
+      default: "auto"
+      description: "Qual modelo de orquestração do AE1 usar"
+    
+    - name: "ARQOS_AE1_MODULES_PATH"
+      type: "dirpath"
+      description: "Localização dos módulos do AE1"
+  
+  runtime_context:
+    - contexto_do_projeto: "Injetado pelo host system"
+    - strategic_objectives: "Objetivos de alto nível (opcional)"
+
+# ------------------------------------------------------------
+# Validação de Contratos (AE1-Specific)
+# ------------------------------------------------------------
+
+validation_contracts:
+  
+  # Validações existentes...
+  schema_integrity:
+    spec: "JSON Schema Draft 7"
+    schemas:
+      - "${ARQOS_SCHEMAS_PATH}/ae0_contract.schema.json"
+      - "${ARQOS_SCHEMAS_PATH}/ae1_contract.schema.json"
+      - "${ARQOS_SCHEMAS_PATH}/ae2_contract.schema.json"
+      - "${ARQOS_SCHEMAS_PATH}/kit.schema.json"
+    on_failure: "abort_with_diagnostic"
+  
+  # ← NOVO: Validações específicas do AE1
+  ae1_module_integrity:
+    description: "Valida que todos os 8 módulos do AE1 existem"
+    required_modules:
+      - strategic_core
+      - internal_orchestrator
+      - distributed_execution_manager
+      - contextual_awareness_module
+      - predictive_optimization_module
+      - self_reflection_module
+      - audit_and_compliance_module
+      - evolution_manager
+    validation:
+      - "∀ module ∈ required_modules, ∃ implementation"
+      - "∀ module, has_valid_contract"
+    on_failure: "abort_with_diagnostic"
+  
+  ae1_internal_contracts:
+    description: "Valida contratos entre módulos do AE1"
+    contracts:
+      - name: "strategic_core → internal_orchestrator"
+        schema: "${ARQOS_SCHEMAS_PATH}/ae1_contracts/strategic_to_orchestrator.json"
+      
+      - name: "internal_orchestrator → contextual_awareness"
+        schema: "${ARQOS_SCHEMAS_PATH}/ae1_contracts/orchestrator_to_context.json"
+      
+      - name: "contextual_awareness → predictive_optimization"
+        schema: "${ARQOS_SCHEMAS_PATH}/ae1_contracts/context_to_prediction.json"
+      
+      - name: "predictive_optimization → strategic_core"
+        schema: "${ARQOS_SCHEMAS_PATH}/ae1_contracts/prediction_to_strategic.json"
+      
+      - name: "internal_orchestrator → distributed_execution"
+        schema: "${ARQOS_SCHEMAS_PATH}/ae1_contracts/orchestrator_to_execution.json"
+      
+      - name: "distributed_execution → audit_compliance"
+        schema: "${ARQOS_SCHEMAS_PATH}/ae1_contracts/execution_to_audit.json"
+      
+      - name: "audit_compliance → self_reflection"
+        schema: "${ARQOS_SCHEMAS_PATH}/ae1_contracts/audit_to_reflection.json"
+      
+      - name: "self_reflection → evolution_manager"
+        schema: "${ARQOS_SCHEMAS_PATH}/ae1_contracts/reflection_to_evolution.json"
+    
+    invariants:
+      - "no_circular_dependencies_between_modules"
+      - "all_payload_types_match"
+    on_failure: "abort_with_diagnostic"
+  
+  dependency_resolution:
+    description: "Valida ordem de dependências AE1 ↔ AE2"
+    rules:
+      - "AE1 depends_on AE2"
+      - "AE2 must be initialized before AE1"
+      - "if mode=lite, AE2 disabled → AE1 cannot start"
+    on_failure: "abort_with_diagnostic"
+
+# ------------------------------------------------------------
+# Preparação do Ambiente AE1
+# ------------------------------------------------------------
+
+ae1_environment_preparation:
+  state_store:
+    action: "initialize_or_load"
+    path: "${ARQOS_STATE_STORE_PATH}"
+    schema: "${ARQOS_SCHEMAS_PATH}/state_store.schema.json"
+    initial_state:
+      version: "1.0"
+      timestamp: "bootstrap_time"
+      mode: "resolved_mode"
+      ae1_ready: false
+      ae2_ready: false
+    on_failure: "abort"
+  
+  event_stream:
+    action: "initialize_if_enabled"
+    enabled: "${ARQOS_EVENT_STREAM_ENABLED}"
+    buffer_size: 1000
+    retention_policy: "last_1h"
+    on_failure: "warn_and_continue"
+  
+  ae1_inputs:
+    strategic_objectives:
+      source: "runtime_context.strategic_objectives || default_objectives"
+      default: []
+    
+    agent_inputs:
+      source: "empty_array"
+      description: "AE1 popula isso dinamicamente"
+    
+    multimodal_data:
+      source: "optional"
+      description: "Injetado pelo host se disponível"
+
+# ------------------------------------------------------------
+# Modos Operacionais (AE1-Aware)
+# ------------------------------------------------------------
+
+modes:
+  lite:
+    description: "Modo mínimo - INCOMPATÍVEL com AE1"
+    enable: []
+    disable:
+      - AE1
+      - AE2
+    reason: "AE1 requires AE2, mode=lite disables AE2"
+    fallback: "Use standard mode for AE1 support"
+  
+  standard:
+    description: "Modo padrão com AE1 + AE2"
+    enable:
+      - AE2
+      - AE1
+    ae1_orchestration: "internal_flow"  # ← Modelo modular
+    ae1_modules:
+      load: "all"
+      optimization_level: "balanced"
+    timeouts:
+      bootstrap_ms: 12000  # ← Aumentado para AE1
+      ae1_unlock_ms: 3000
+  
+  strict:
+    description: "Modo máximo de governança"
+    enable:
+      - AE2
+      - AE1
+    ae1_orchestration: "internal_flow"
+    ae1_modules:
+      load: "all"
+      optimization_level: "conservative"
+      extra_validation: true
+    extra_guards:
+      - validate_all_ae1_contracts
+      - simulate_ae1_module_communication
+      - pre_check_circular_dependencies
+    timeouts:
+      bootstrap_ms: 18000
+      ae1_unlock_ms: 5000
+
+# ------------------------------------------------------------
+# Sequência Canônica de Inicialização (CORRIGIDA)
+# ------------------------------------------------------------
+
+bootstrap_sequence:
+  - step: "load_kit_yaml"
+    input: "${ARQOS_KIT_PATH}"
+    output: "kit_config"
+    on_failure: "abort"
+  
+  - step: "validate_schemas"
+    input: "kit_config + schemas"
+    validation: "schema_integrity"
+    on_failure: "abort_with_diagnostic"
+  
+  - step: "validate_contracts"
+    validation: "contract_consistency"
+    on_failure: "abort_with_diagnostic"
+  
+  - step: "resolve_mode"
+    strategy: "deterministic_lookup"
+    output: "resolved_mode"
+    
+    # ← NOVO: Validação de compatibilidade AE1
+    post_resolution_check:
+      - if: "resolved_mode == 'lite'"
+        then: "warn: AE1 não disponível em modo lite"
+  
+  - step: "validate_ae1_availability"  # ← NOVO
+    condition: "resolved_mode != 'lite'"
+    checks:
+      - ae1_modules_exist
+      - ae1_schemas_valid
+    on_failure: "abort_with_diagnostic"
+  
+  - step: "initialize_state_store"  # ← NOVO
+    action: "ae1_environment_preparation.state_store"
+    output: "state_store_handle"
+  
+  - step: "initialize_event_stream"  # ← NOVO
+    action: "ae1_environment_preparation.event_stream"
+    output: "event_stream_handle"
+  
+  - step: "initialize_runtime"
+    input: "resolved_mode + kit_config"
+    isolation: true
+    output: "runtime_handle"
+  
+  - step: "bind_interfaces"
+    input: "runtime_handle + contexto_host"
+    output: "interface_registry"
+  
+  - step: "start_health_monitoring"
+    interval_ms: 1000
+  
+  # ═══════════════════════════════════════════════════════
+  # ORDEM CORRETA: AE2 → AE1 (não AE1 → AE2)
+  # ═══════════════════════════════════════════════════════
+  
+  - step: "unlock_AE2"  # ← PRIMEIRO!
+    condition: "mode_allows_ae2 && validation_passed"
+    atomic: true
+    post_unlock:
+      - update_state_store: { ae2_ready: true }
+      - emit_event: "ae2_initialized"
+  
+  - step: "validate_ae1_dependencies"  # ← NOVO
+    condition: "ae2_ready"
+    checks:
+      - "AE2 is operational"
+      - "AE1 inputs prepared"
+      - "AE1 modules validated"
+    on_failure: "abort_ae1_unlock"
+  
+  - step: "unlock_AE1"  # ← DEPOIS!
+    condition: "ae2_ready && validation_passed"
+    atomic: true
+    pre_unlock:
+      - inject_ae1_inputs:
+          strategic_objectives: "from runtime_context"
+          agent_inputs: []
+          event_stream: "event_stream_handle"
+          state_store: "state_store_handle"
+      
+      - resolve_ae1_orchestration:
+          mode: "${ARQOS_AE1_ORCHESTRATION_MODE}"
+          if_auto: "use internal_flow for standard/strict"
+    
+    post_unlock:
+      - update_state_store: { ae1_ready: true }
+      - emit_event: "ae1_initialized"
+      - start_ae1_health_check
+  
+  - step: "emit_bootstrap_complete"
+    output: "success_status"
+    summary:
+      - mode: "resolved_mode"
+      - ae2_status: "ready|disabled"
+      - ae1_status: "ready|disabled"
+      - orchestration_model: "legacy|internal_flow"
+
+# ------------------------------------------------------------
+# Health Checks (AE1-Specific)
+# ------------------------------------------------------------
+
+health:
+  checks:
+    # ... checks existentes ...
+    
+    # ← NOVO: AE1-specific
+    - name: "ae1_module_health"
+      condition: "ae1_enabled"
+      interval_ms: 5000
+      checks:
+        - "all 8 modules responsive"
+        - "no deadlocks between modules"
+        - "contracts still valid"
+      on_failure: "circuit_break_ae1"
+    
+    - name: "ae1_ae2_communication"
+      condition: "ae1_enabled && ae2_enabled"
+      interval_ms: 10000
+      checks:
+        - "AE1 can query AE2"
+        - "AE2 responds to AE1"
+      on_failure: "alert_and_investigate"
+  
+  watchdogs:
+    - name: "bootstrap_timeout"
+      timeout_ms: "mode_dependent"
+    
+    - name: "ae1_unlock_timeout"  # ← NOVO
+      timeout_ms: 5000
+      on_timeout: "rollback_ae1_unlock"
+
+# ------------------------------------------------------------
+# Observability (Expandida)
+# ------------------------------------------------------------
+
+observability:
+  required_metrics:
+    - bootstrap_duration_ms
+    - validation_duration_ms
+    - mode_resolved
+    - contracts_validated_count
+    - health_status
+    
+    # ← NOVO: AE1 metrics
+    - ae1_unlock_duration_ms
+    - ae1_modules_loaded_count
+    - ae1_orchestration_mode
+    - ae2_unlock_duration_ms
+  
+  structured_logging:
+    enabled: true
+    format: "json"
+    fields:
+      - timestamp
+      - level
+      - component
+      - message
+      - context
+      - trace_id
+      - ae1_context:  # ← NOVO
+          - module_states
+          - contract_validations
+  
+  diagnostic_output:
+    on_ae1_failure:
+      - which_modules_failed
+      - which_contracts_invalid
+      - dependency_graph_snapshot
+      - state_store_snapshot
+
+# ------------------------------------------------------------
+# Princípios de Design (Atualizados)
+# ------------------------------------------------------------
+
+principles:
+  - contrato_acima_de_codigo
+  - falha_antes_da_decisao
+  - bootstrap_sem_inteligencia
+  - isolamento_por_padrao
+  - governanca_antes_da_execucao
+  - reproducibilidade
+  - observabilidade
+  - dependencias_explicitas  # ← NOVO
+  - ae1_aware_initialization  # ← NOVO: "conheço meu cliente"
+
+# ------------------------------------------------------------
+# Status
+# ------------------------------------------------------------
+
+status:
+  readiness: "production_ready"
+  governance_level: "soberano"
+  failure_tolerance: "alta"
+  specification_completeness: "completa"
+  ae1_integration: "native"  # ← NOVO

@@ -1,0 +1,15 @@
+{
+    "name": "maestro-hub",
+    "version": "1.0.0",
+    "main": "src/index.ts",
+    "scripts": {
+        "dev": "ts-node src/index.ts",
+        "start": "node dist/index.js",
+        "test:int": "jest tests/hub.boot.int.test.ts"
+    },
+    "dependencies": {
+        "@arqos/engine": "*",
+        "@arqos/maestro-gateway": "*",
+        "dotenv": "^16.4.5"
+    }
+}

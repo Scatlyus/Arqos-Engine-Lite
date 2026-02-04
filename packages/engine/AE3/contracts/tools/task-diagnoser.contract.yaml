@@ -1,0 +1,47 @@
+# Tool Contract: TaskDiagnoser
+contract_id: "tool_t6_task_diagnoser"
+version: "1.0.0"
+
+tool_id: "T6"
+name: "TaskDiagnoser"
+description: "Classify task intent, domain, complexity, and urgency with confidence."
+phase: colhe
+
+enabled_in: fullstack
+
+timeout_ms: 2000
+
+input_schema:
+  type: object
+  required: [text]
+  properties:
+    text:
+      type: string
+    context:
+      type: object
+    domain_hints:
+      type: array
+      items:
+        type: string
+    history:
+      type: array
+      items: {}
+
+output_schema:
+  type: object
+  required: [task_type, domain, confidence]
+  properties:
+    task_type:
+      type: string
+    domain:
+      type: string
+    complexity_score:
+      type: number
+    urgency_score:
+      type: number
+    confidence:
+      type: number
+    reasons:
+      type: array
+      items:
+        type: string

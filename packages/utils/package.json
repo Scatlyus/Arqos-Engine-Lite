@@ -1,0 +1,20 @@
+{
+    "name": "@arqos/utils",
+    "version": "1.0.0",
+    "description": "Shared utilities for Arqos Engine ecosystem",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsc",
+        "test": "jest"
+    },
+    "keywords": [],
+    "author": "ATLAS",
+    "license": "ISC",
+    "devDependencies": {
+        "typescript": "^5.3.3",
+        "@types/node": "^20.19.30",
+        "jest": "^29.7.0",
+        "ts-jest": "^29.2.5"
+    }
+}

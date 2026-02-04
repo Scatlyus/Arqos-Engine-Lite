@@ -1,0 +1,37 @@
+contract_id: "ae1_ae2_cognitive_contract"
+version: "1.0.0"
+
+provides:
+  - name: cognitive_context
+    format: CognitiveContext
+    frequency: on_request
+    schema:
+      type: object
+      required: [recent_patterns, heuristic_suggestions, memory_insights]
+      properties:
+        recent_patterns:
+          type: array
+        heuristic_suggestions:
+          type: array
+        memory_insights:
+          type: object
+        risk_indicators:
+          type: array
+
+  - name: pattern_insights
+    format: PatternInsights
+    frequency: periodic
+
+  - name: learning_metrics
+    format: LearningMetrics
+    frequency: periodic
+
+receives:
+  - name: strategic_directives
+    format: StrategicDirectives
+    source: AE2
+
+  - name: learning_constraints
+    format: LearningConstraints
+    source: AE2
+    purpose: guide_learning_process

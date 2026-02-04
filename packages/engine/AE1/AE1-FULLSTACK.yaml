@@ -1,0 +1,96 @@
+ae1_fullstack:
+  id: "AE1-FULLSTACK"
+  version: "2.1.0-fullstack"
+  
+  state_store:
+    type: persistent  # ← Redis, PostgreSQL, etc
+    initial_state: comprehensive
+    persist_on_exit: true
+    backup_policy: incremental_daily
+  
+  memory:
+    short_term:
+      enabled: true
+      retention: 7_days
+      size_limit: 100_MB
+      stores:
+        - event_history
+        - decision_history
+        - execution_history
+        - agent_states
+        - user_context
+    
+    long_term:
+      enabled: true
+      retention: 180_days
+      size_limit: 1_GB
+      compression: true
+      archival: "cold_storage_after_90_days"
+      stores:
+        - consolidated_patterns
+        - stable_heuristics
+        - historical_metrics
+    
+    vectorial:
+      enabled: true
+      dimensions: 768
+      similarity_metric: cosine
+      index_type: HNSW
+      size_limit: 500_MB
+      stores:
+        - semantic_patterns
+        - concept_embeddings
+        - context_vectors
+  
+  cognition_loop:
+    enabled: true
+    phases:
+      - observe
+      - reflect
+      - abstract
+      - suggest
+      - validate
+    timeout_per_cycle_ms: 10000
+    max_cycles_per_execution: unlimited
+  
+  learning:
+    enabled: true
+    heuristic_adjustment:
+      enabled: true
+      approval_required: true
+      threshold: 0.3
+    
+    pattern_detection:
+      enabled: true
+      algorithms: [statistical, ml_based, rule_based]
+      confidence_threshold: 0.75
+    
+    bias_detection:
+      enabled: true
+      types: [confirmation, availability, anchoring, recency]
+  
+  reflection:
+    depth: deep
+    post_execution: true
+    periodic: true
+    period_hours: 24
+  
+  interface_with_ae2:
+    provides:
+      - cognitive_context
+      - risk_indicators
+      - heuristic_suggestions
+      - learning_metrics
+      - pattern_insights
+    
+    receives:
+      - strategic_directives
+      - execution_logs
+      - decision_traces
+      - learning_constraints
+  
+  guarantees:
+    post_execution_only: true
+    no_policy_enforcement: true
+    no_strategic_decisions: true
+    approval_before_application: true

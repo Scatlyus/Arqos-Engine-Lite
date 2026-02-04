@@ -1,0 +1,45 @@
+# Tool Contract: InsightSummarizer
+contract_id: "tool_t24_insight_summarizer"
+version: "1.0.0"
+
+tool_id: "T24"
+name: "InsightSummarizer"
+description: "Generate executive summaries with highlights and key points."
+phase: fornece
+
+enabled_in: fullstack
+
+timeout_ms: 2500
+
+input_schema:
+  type: object
+  required: [content]
+  properties:
+    content:
+      type: string
+    format:
+      type: string
+      enum: [text, bullet, report]
+    max_tokens:
+      type: number
+    focus:
+      type: array
+      items:
+        type: string
+
+output_schema:
+  type: object
+  required: [summary]
+  properties:
+    summary:
+      type: string
+    highlights:
+      type: array
+      items:
+        type: string
+    key_points:
+      type: array
+      items:
+        type: string
+    confidence:
+      type: number

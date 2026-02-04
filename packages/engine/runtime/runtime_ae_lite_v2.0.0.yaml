@@ -1,0 +1,839 @@
+# ============================================================
+# Arqos Engine — Runtime Configuration (AE-LITE Mode)
+# Version: 2.0.0
+# Purpose: Minimal operational mode for testing, development, 
+#          and architecture validation
+# Status: Production-Ready, Testable
+# ============================================================
+
+runtime:
+  id: "arqos-runtime-lite"
+  version: "2.0.0"
+  mode: "lite"
+  environment: "development"
+  
+  metadata:
+    created_at: "2025-01-14"
+    description: "Lightweight runtime configuration for rapid testing and CI/CD"
+    use_cases:
+      - "Unit and integration testing"
+      - "CI/CD pipelines"
+      - "Architecture validation"
+      - "Development and debugging"
+      - "Quick prototypes"
+    
+    capabilities:
+      ae2_modules: 3  # strategic_core, internal_orchestrator, decision_auditor
+      ae1_memory_layers: 1  # short-term only
+      ae3_tools: 5  # minimal essential toolkit
+      cognitive_contracts: 0  # disabled in lite mode
+      learning: false
+      persistence: "in-memory"
+  
+  # ----------------------------------------------------------
+  # Global Configuration
+  # ----------------------------------------------------------
+  
+  global_timeout:
+    enabled: true
+    timeout_ms: 60000  # 60 seconds total runtime timeout
+    per_module_timeout_ms: 15000
+    bootstrap_timeout_ms: 5000
+  
+  execution_mode:
+    deterministic: true
+    reproducible: true
+    debug_mode: true
+    verbose_logging: true
+  
+  # ----------------------------------------------------------
+  # Environment Variables (Required)
+  # ----------------------------------------------------------
+  
+  environment_variables:
+    required:
+      - name: "ARQOS_MODE"
+        value: "lite"
+        description: "Operational mode identifier"
+        immutable: true
+      
+      - name: "ARQOS_KIT_PATH"
+        value: "./config/kit.yaml"
+        description: "Path to kit configuration file"
+      
+      - name: "ARQOS_SCHEMAS_PATH"
+        value: "./schemas"
+        description: "Directory containing validation schemas"
+      
+      - name: "ARQOS_STATE_STORE_PATH"
+        value: "/tmp/arqos_state_lite.json"
+        description: "In-memory state store location"
+    
+    optional:
+      - name: "ARQOS_LOG_LEVEL"
+        value: "info"
+        options: ["debug", "info", "warn", "error"]
+      
+      - name: "ARQOS_VALIDATION_DEPTH"
+        value: "basic"
+        options: ["basic", "comprehensive"]
+      
+      - name: "ARQOS_EVENT_STREAM_ENABLED"
+        value: "false"
+        description: "Event streaming disabled in lite mode"
+
+# ============================================================
+# AE0 (Harbor Bootstrap) Configuration
+# ============================================================
+
+ae0:
+  mode: "lite"
+  spec_file: "AE0_Harbor_Bootstrap_v1_3_0.yaml"
+  enabled: true
+  
+  configuration:
+    validation_depth: "basic"
+    strict_mode: true
+    fail_fast: true
+  
+  bootstrap_sequence:
+    timeout_ms: 5000
+    steps:
+      - validate_environment
+      - resolve_mode: "lite"
+      - validate_kit_schema
+      - validate_module_contracts
+      - initialize_state_store
+      - prepare_unlock_sequence
+  
+  unlock_order:
+    enforcement: "strict"
+    sequence:
+      - component: "AE2"
+        priority: 1
+        reason: "AE1 depends on AE2 strategic context"
+      
+      - component: "AE1"
+        priority: 2
+        reason: "AE1 requires AE2 operational"
+      
+      - component: "AE3"
+        priority: 3
+        reason: "AE3 needs both AE1 and AE2"
+  
+  validation_contracts:
+    enabled: true
+    contracts:
+      - schema_integrity
+      - lite_mode_compliance
+      - unlock_order_validation
+      - component_isolation
+  
+  health_checks:
+    interval_ms: 10000
+    checks:
+      - contract_validation_status
+      - component_responsiveness
+      - unlock_order_integrity
+      - memory_footprint
+    
+    thresholds:
+      memory_footprint_mb: 50
+      response_time_ms: 1000
+
+# ============================================================
+# AE1 (DNABase) Configuration
+# ============================================================
+
+ae1:
+  mode: "lite"
+  spec_file: "AE1_DNABase_v2_2_0.yaml"
+  enabled: true
+  
+  depends_on:
+    - component: "AE0"
+      status: "ready"
+    - component: "AE2"
+      status: "ready"
+      reason: "Requires strategic context from AE2"
+  
+  memory_configuration:
+    layers:
+      short_term:
+        enabled: true
+        retention: "1 day"
+        size_limit_mb: 5
+        backend: "in-memory"
+        stores:
+          - event_history
+          - decision_history
+          - execution_history
+      
+      long_term:
+        enabled: false
+        reason: "Disabled in lite mode"
+      
+      vectorial:
+        enabled: false
+        reason: "Disabled in lite mode"
+  
+  reflection_configuration:
+    enabled: true
+    depth: "shallow"
+    trigger: "on_execution_complete"
+    phases:
+      - observe
+      - reflect
+      - suggest
+    timeout_ms: 3000
+  
+  learning_configuration:
+    enabled: false
+    reason: "Learning disabled in lite mode"
+  
+  pattern_detection:
+    enabled: false
+    reason: "ML pattern detection disabled in lite mode"
+  
+  integration_with_ae2:
+    provides:
+      - basic_context:
+          format: "BasicContext"
+          frequency: "on_request"
+    
+    receives:
+      - strategic_directives:
+          format: "StrategicDirectives"
+          source: "AE2.strategic_core"
+  
+  health_checks:
+    interval_ms: 10000
+    checks:
+      - memory_integrity
+      - reflection_pipeline_health
+      - ae2_communication
+    
+    thresholds:
+      memory_usage_mb: 10
+      reflection_latency_ms: 5000
+
+# ============================================================
+# AE2 (Strategos Maestro) Configuration
+# ============================================================
+
+ae2:
+  mode: "lite"
+  spec_file: "AE2_Strategos_v2_3_0.yaml"
+  enabled: true
+  
+  depends_on:
+    - component: "AE0"
+      status: "ready"
+  
+  modules:
+    enabled_count: 3
+    
+    strategic_core:
+      enabled: true
+      priority: "high"
+      responsibilities:
+        - strategic_decision_making
+        - objective_alignment
+        - basic_planning
+      timeout_ms: 3000
+    
+    internal_orchestrator:
+      enabled: true
+      priority: "high"
+      responsibilities:
+        - module_coordination
+        - execution_planning
+        - resource_allocation
+      timeout_ms: 3000
+    
+    decision_auditor:
+      enabled: true
+      priority: "normal"
+      responsibilities:
+        - decision_logging
+        - compliance_tracking
+        - basic_audit_trail
+      timeout_ms: 2000
+    
+    # Disabled modules in lite mode
+    distributed_execution_manager:
+      enabled: false
+      reason: "Not needed for lite mode"
+    
+    contextual_awareness_module:
+      enabled: false
+      reason: "Not needed for lite mode"
+    
+    strategic_learning_module:
+      enabled: false
+      reason: "Learning disabled in lite mode"
+    
+    audit_and_compliance_module:
+      enabled: false
+      reason: "Basic auditing via decision_auditor"
+    
+    agent_coordination_module:
+      enabled: false
+      reason: "No external agents in lite mode"
+  
+  cognitive_contracts:
+    enabled: false
+    reason: "Cognitive contracts disabled in lite mode"
+  
+  decision_policy:
+    complexity: "minimal"
+    deterministic: true
+    timeout_ms: 3000
+    max_depth: 2
+    
+    decision_criteria:
+      - objective_alignment
+      - resource_availability
+    
+    decision_strategies:
+      - rule_based
+  
+  event_handling:
+    mode: "synchronous"
+    queue_type: "fifo"
+    batch_processing: false
+    
+    consumes:
+      - runtime_start
+      - health_check
+      - execution_complete
+    
+    routing_rules:
+      runtime_start:
+        plan: "basic_validation"
+        priority: "high"
+      
+      health_check:
+        plan: "health_summary"
+        priority: "normal"
+      
+      execution_complete:
+        plan: "record_and_reflect"
+        priority: "normal"
+  
+  integration_with_ae1:
+    provides:
+      - basic_execution_logs:
+          format: "ExecutionLog"
+          frequency: "on_complete"
+          source: "internal_orchestrator"
+    
+    receives:
+      - basic_context:
+          format: "BasicContext"
+          source: "AE1"
+          purpose: "minimal_contextualization"
+  
+  integration_with_ae3:
+    provides:
+      - basic_orchestration_plan:
+          format: "simplified"
+          contains:
+            - tool_name
+            - tool_input
+            - timeout
+          source: "internal_orchestrator"
+    
+    receives:
+      - execution_results:
+          format: "simple"
+          contains:
+            - tool_output
+            - success
+            - duration_ms
+      
+      - tool_availability:
+          format: "real_time"
+          contains:
+            - tool_health_status
+  
+  health_checks:
+    interval_ms: 10000
+    checks:
+      - modules_enabled: 3
+      - module_responsiveness
+      - decision_latency
+      - ae1_communication
+      - ae3_communication
+    
+    thresholds:
+      decision_latency_ms: 5000
+      orchestration_overhead_ms: 500
+
+# ============================================================
+# AE3 (DNABase Pipeline) Configuration
+# ============================================================
+
+ae3:
+  mode: "lite"
+  spec_file: "AE3_DNABase_Pipeline_v2_2_0.yaml"
+  enabled: true
+  
+  depends_on:
+    - component: "AE0"
+      status: "ready"
+    - component: "AE1"
+      status: "ready"
+    - component: "AE2"
+      status: "ready"
+  
+  tools_configuration:
+    enabled_count: 5
+    execution_mode: "sequential"
+    parallel_execution: false
+    custom_plugins: false
+    
+    essential_tools:
+      file_io:
+        enabled: true
+        operations:
+          - read_file
+          - write_file
+          - list_files
+        timeout_ms: 5000
+      
+      text_processing:
+        enabled: true
+        operations:
+          - transform_text
+          - parse_structured_data
+          - validate_format
+        timeout_ms: 3000
+      
+      data_validation:
+        enabled: true
+        operations:
+          - validate_schema
+          - check_constraints
+          - sanitize_input
+        timeout_ms: 2000
+      
+      execution_control:
+        enabled: true
+        operations:
+          - execute_step
+          - check_status
+          - abort_execution
+        timeout_ms: 5000
+      
+      result_formatting:
+        enabled: true
+        operations:
+          - format_output
+          - generate_report
+          - structure_data
+        timeout_ms: 3000
+  
+  pipeline_configuration:
+    phases:
+      preparation:
+        enabled: true
+        timeout_ms: 2000
+      
+      execution:
+        enabled: true
+        timeout_ms: 30000
+      
+      validation:
+        enabled: true
+        timeout_ms: 2000
+      
+      reporting:
+        enabled: true
+        timeout_ms: 2000
+  
+  integration_with_ae2:
+    receives:
+      - orchestration_plan:
+          format: "simplified"
+          source: "AE2.internal_orchestrator"
+    
+    provides:
+      - execution_results:
+          format: "simple"
+          contains:
+            - tool_output
+            - success
+            - duration_ms
+      
+      - tool_availability:
+          format: "real_time"
+  
+  health_checks:
+    interval_ms: 10000
+    checks:
+      - tools_enabled: 5
+      - tool_responsiveness
+      - execution_pipeline_health
+    
+    thresholds:
+      tool_response_time_ms: 3000
+      pipeline_overhead_ms: 500
+
+# ============================================================
+# Execution Flow
+# ============================================================
+
+execution_flow:
+  trigger: "manual"
+  validation: "basic"
+  reproducible: true
+  
+  sequence:
+    - step: "bootstrap"
+      component: "AE0"
+      timeout_ms: 5000
+      critical: true
+    
+    - step: "unlock_ae2"
+      component: "AE2"
+      condition: "ae0_ready"
+      timeout_ms: 3000
+      critical: true
+    
+    - step: "unlock_ae1"
+      component: "AE1"
+      condition: "ae2_ready"
+      timeout_ms: 3000
+      critical: true
+    
+    - step: "unlock_ae3"
+      component: "AE3"
+      condition: "ae1_ready && ae2_ready"
+      timeout_ms: 3000
+      critical: true
+    
+    - step: "ae2_decision"
+      component: "AE2.strategic_core"
+      input: "user_request + context"
+      output: "strategic_decision"
+      timeout_ms: 5000
+    
+    - step: "ae2_orchestration"
+      component: "AE2.internal_orchestrator"
+      input: "strategic_decision"
+      output: "orchestration_plan"
+      timeout_ms: 3000
+    
+    - step: "ae3_execution"
+      component: "AE3"
+      input: "orchestration_plan"
+      output: "execution_results"
+      timeout_ms: 30000
+    
+    - step: "ae1_reflection"
+      component: "AE1"
+      input: "execution_results + execution_logs"
+      output: "reflection_report"
+      timeout_ms: 3000
+    
+    - step: "ae2_audit"
+      component: "AE2.decision_auditor"
+      input: "all_execution_data"
+      output: "audit_record"
+      timeout_ms: 2000
+
+# ============================================================
+# Observability & Monitoring
+# ============================================================
+
+observability:
+  
+  logging:
+    enabled: true
+    level: "info"
+    format: "json"
+    output: "console"
+    
+    structured_fields:
+      - timestamp
+      - level
+      - component
+      - mode: "lite"
+      - message
+      - context
+      - trace_id
+    
+    retention: "1 day"
+  
+  metrics:
+    enabled: true
+    backend: "console"
+    export_interval_ms: 10000
+    
+    tracked_metrics:
+      # Bootstrap metrics
+      - bootstrap_duration_ms
+      - validation_duration_ms
+      - unlock_sequence_duration_ms
+      
+      # Component metrics
+      - ae2_decisions_per_minute
+      - ae2_decision_latency_ms
+      - ae2_orchestration_latency_ms
+      - ae3_tool_executions_per_minute
+      - ae3_execution_latency_ms
+      - ae1_reflections_per_minute
+      - ae1_reflection_latency_ms
+      
+      # Health metrics
+      - component_health_status
+      - memory_usage_mb
+      - cpu_usage_percent
+      
+      # Mode-specific
+      - lite_mode_active: true
+      - modules_enabled: 3
+      - tools_enabled: 5
+      - cognitive_contracts_active: 0
+  
+  diagnostics:
+    enabled: true
+    verbose: true
+    
+    diagnostic_reports:
+      - component_status_summary
+      - execution_flow_trace
+      - error_analysis
+      - performance_bottlenecks
+    
+    on_failure:
+      - capture_full_state
+      - generate_diagnostic_report
+      - suggest_fixes
+  
+  tracing:
+    enabled: false
+    reason: "Disabled in lite mode for performance"
+
+# ============================================================
+# Health & Reliability
+# ============================================================
+
+health:
+  
+  global_health_check:
+    enabled: true
+    interval_ms: 5000
+    timeout_ms: 2000
+    
+    checks:
+      - all_components_responsive
+      - no_deadlocks
+      - memory_within_limits
+      - unlock_order_maintained
+  
+  component_health_checks:
+    ae0:
+      interval_ms: 10000
+      checks:
+        - contract_validation_status
+        - bootstrap_integrity
+    
+    ae1:
+      interval_ms: 10000
+      checks:
+        - memory_integrity
+        - reflection_pipeline_operational
+    
+    ae2:
+      interval_ms: 10000
+      checks:
+        - minimal_modules_responsive: 3
+        - decision_pipeline_operational
+        - orchestrator_responsive
+    
+    ae3:
+      interval_ms: 10000
+      checks:
+        - essential_tools_operational: 5
+        - execution_pipeline_responsive
+  
+  failure_policies:
+    on_component_failure:
+      strategy: "degrade_gracefully"
+      actions:
+        - log_failure
+        - attempt_restart
+        - fallback_to_safe_mode
+    
+    on_timeout:
+      strategy: "abort_and_report"
+      actions:
+        - capture_state
+        - generate_diagnostic
+        - rollback_if_possible
+    
+    on_contract_violation:
+      strategy: "immediate_abort"
+      actions:
+        - log_violation
+        - generate_detailed_diagnostic
+        - prevent_further_execution
+  
+  circuit_breaker:
+    enabled: true
+    failure_threshold: 3
+    timeout_ms: 10000
+    half_open_requests: 1
+
+# ============================================================
+# Exit Conditions
+# ============================================================
+
+exit_conditions:
+  
+  success:
+    - ae0_status: "ok"
+    - ae2_status: "ready"
+    - ae1_status: "ready"
+    - ae3_status: "ready"
+    - unlock_order_validated: true
+    - mode_compliance_validated: true
+    - all_modules_responsive: true
+    - decision_made: true
+    - execution_success: true
+    - reflection_complete: true
+  
+  failure:
+    - any_component_failed: true
+    - timeout_exceeded: true
+    - contract_violation_detected: true
+    - validation_failure: true
+    - unlock_order_violation: true
+  
+  abort:
+    - critical_error_detected: true
+    - user_requested_abort: true
+    - safety_violation: true
+
+# ============================================================
+# Performance Targets (LITE Mode)
+# ============================================================
+
+performance:
+  targets:
+    bootstrap_duration_ms: "<5000"
+    unlock_sequence_duration_ms: "<3000"
+    decision_latency_ms: "<3000"
+    orchestration_overhead_ms: "<500"
+    execution_latency_ms: "<30000"
+    reflection_latency_ms: "<3000"
+    total_runtime_ms: "<60000"
+    
+    memory_footprint_mb: "<20"
+    cpu_usage_percent: "<50"
+    
+    availability: "Best effort"
+    p95_latency_ms: 5000
+  
+  optimizations:
+    - deterministic_execution
+    - minimal_overhead
+    - fast_startup
+    - low_memory_footprint
+
+# ============================================================
+# Governance & Compliance
+# ============================================================
+
+governance:
+  
+  golden_rule:
+    description: "No legacy module executes strategic decisions directly"
+    enforcement: "strict"
+    
+    priority_flow:
+      - strategic_core: "Decides strategy"
+      - internal_orchestrator: "Coordinates execution"
+      - legacy_pipeline: "Compatible executor only"
+  
+  guarantees:
+    - decisao_sem_execucao
+    - orquestracao_sem_acoplamento
+    - auditoria_completa
+    - mode_compliance
+    - comportamento_deterministico
+    - decisoes_simples
+    - sem_cognitive_contracts
+  
+  principles:
+    - contrato_acima_de_codigo
+    - falha_antes_da_decisao
+    - orquestracao_sem_inteligencia_propria
+    - isolamento_por_padrao
+    - governanca_antes_da_execucao
+    - reproducibilidade
+    - observabilidade
+    - dependencias_explicitas
+    - mode_awareness
+
+# ============================================================
+# Testing & Validation
+# ============================================================
+
+testing:
+  
+  automated_tests:
+    enabled: true
+    
+    test_suites:
+      - bootstrap_validation
+      - unlock_sequence_validation
+      - component_isolation_validation
+      - contract_compliance_validation
+      - mode_compliance_validation
+      - execution_flow_validation
+  
+  validation_scenarios:
+    - scenario: "basic_execution"
+      description: "Validate basic execution flow"
+      expected_duration_ms: "<10000"
+    
+    - scenario: "component_failure"
+      description: "Validate graceful degradation"
+      expected_behavior: "safe_failure"
+    
+    - scenario: "timeout_handling"
+      description: "Validate timeout handling"
+      expected_behavior: "abort_with_diagnostic"
+  
+  ci_cd_integration:
+    enabled: true
+    
+    stages:
+      - validate_configuration
+      - test_bootstrap
+      - test_execution_flow
+      - test_failure_modes
+      - generate_report
+
+# ============================================================
+# Status
+# ============================================================
+
+status:
+  readiness: "production_ready"
+  testing_status: "fully_tested"
+  mode: "lite"
+  capabilities: "minimal"
+  recommended_for:
+    - "Development and testing"
+    - "CI/CD pipelines"
+    - "Architecture validation"
+    - "Quick prototypes"
+  not_recommended_for:
+    - "Production workloads"
+    - "Complex workflows"
+    - "Learning systems"
+    - "High-availability requirements"

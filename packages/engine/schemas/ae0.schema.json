@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": [
+    "id",
+    "version",
+    "role",
+    "unlock_sequence"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "enum": [
+        "AE0"
+      ]
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "role": {
+      "type": "string"
+    },
+    "unlock_sequence": {
+      "type": "object",
+      "required": [
+        "order"
+      ],
+      "properties": {
+        "order": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "AE2",
+              "AE1",
+              "AE3"
+            ]
+          },
+          "minItems": 3,
+          "maxItems": 3
+        }
+      }
+    }
+  }
+}

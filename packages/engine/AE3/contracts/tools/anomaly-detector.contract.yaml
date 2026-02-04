@@ -1,0 +1,65 @@
+# Tool Contract: AnomalyDetector
+contract_id: "tool_t29_anomaly_detector"
+version: "1.0.0"
+
+tool_id: "T29"
+name: "AnomalyDetector"
+description: "Detect anomalies in time series using configurable statistical methods."
+phase: processa
+
+enabled_in: fullstack
+
+timeout_ms: 3000
+
+input_schema:
+  type: object
+  required: [series]
+  properties:
+    series:
+      type: array
+      items:
+        type: object
+        required: [value]
+        properties:
+          timestamp:
+            type: string
+          value:
+            type: number
+    method:
+      type: string
+      enum: [zscore, iqr, seasonal]
+    window:
+      type: number
+    threshold:
+      type: number
+    sensitivity:
+      type: number
+
+output_schema:
+  type: object
+  required: [anomalies]
+  properties:
+    anomalies:
+      type: array
+      items:
+        type: object
+        required: [index, value, score]
+        properties:
+          index:
+            type: number
+          timestamp:
+            type: string
+          value:
+            type: number
+          score:
+            type: number
+          severity:
+            type: string
+            enum: [low, medium, high, critical]
+    summary:
+      type: object
+      properties:
+        total:
+          type: number
+        by_severity:
+          type: object

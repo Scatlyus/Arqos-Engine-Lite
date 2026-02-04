@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": [
+    "id",
+    "version",
+    "role",
+    "unlock_priority"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "enum": [
+        "AE3"
+      ]
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "execucao_operacional"
+      ]
+    },
+    "unlock_priority": {
+      "type": "integer",
+      "enum": [
+        3
+      ]
+    },
+    "lite": {
+      "type": "object",
+      "required": [
+        "tools"
+      ],
+      "properties": {
+        "tools": {
+          "type": "object",
+          "required": [
+            "enabled_count"
+          ],
+          "properties": {
+            "enabled_count": {
+              "type": "integer",
+              "enum": [
+                5
+              ]
+            }
+          }
+        }
+      }
+    },
+    "fullstack": {
+      "type": "object",
+      "required": [
+        "tools",
+        "capabilities"
+      ],
+      "properties": {
+        "tools": {
+          "type": "object",
+          "required": [
+            "enabled_count"
+          ]
+        },
+        "capabilities": {
+          "type": "object",
+          "properties": {
+            "custom_plugins": {
+              "type": "boolean"
+            },
+            "hot_reload": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    }
+  }
+}

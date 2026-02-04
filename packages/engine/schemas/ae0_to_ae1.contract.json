@@ -1,0 +1,51 @@
+{
+  "contract_id": "AE0→AE1",
+  "version": "1.0.0",
+  "from": "AE0",
+  "to": "AE1",
+  "guarantees_from_ae0": {
+    "environment_prepared": {
+      "state_store": {
+        "exists": true,
+        "schema_valid": true,
+        "initial_state": "populated"
+      },
+      "event_stream": {
+        "initialized": true,
+        "buffer_ready": true
+      }
+    },
+    "dependencies_resolved": {
+      "ae2_status": "operational",
+      "ae2_reachable": true
+    },
+    "modules_validated": {
+      "all_8_modules_present": true,
+      "contracts_between_modules_valid": true,
+      "no_circular_dependencies": true
+    },
+    "inputs_injected": {
+      "strategic_objectives": "array",
+      "agent_inputs": "array",
+      "event_stream": "handle",
+      "state_store": "handle"
+    }
+  },
+  "expectations_from_ae1": {
+    "forbidden_actions": [
+      "bootstrap",
+      "modify_ae0_state",
+      "unlock_ae2",
+      "bypass_contracts"
+    ],
+    "required_behavior": {
+      "respects_orchestration_mode": true,
+      "uses_only_enabled_modules": true,
+      "reports_health_status": true
+    }
+  },
+  "failure_protocol": {
+    "if_ae0_fails_preparation": "abort_before_unlock",
+    "if_ae1_fails_post_unlock": "circuit_break_and_diagnostic"
+  }
+}

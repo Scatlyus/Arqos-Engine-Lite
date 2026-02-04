@@ -1,0 +1,767 @@
+# ============================================================
+# Arqos Engine — AE3 (DNABase Pipeline)
+# Operational Execution Layer — v2.2.0 (Mode-Aware)
+# ============================================================
+
+AE3:
+  id: "AP"
+  name: "DNABase Pipeline"
+  alias: "Operational Toolkit"
+  version: "2.2.0-mode-aware"
+  role: "execucao_operacional"
+  nature:
+    - operacional
+    - modular
+    - extensivel
+    - toolkit_based
+    - stateless_per_tool
+    - mode_aware  # ← NOVO
+
+  arqos_binding:
+    engine: "Arqos Engine"
+    canonical_role: "AE3"
+    contract_version: "1.0.0"
+    
+    # ----------------------------------------------------------
+    # NOVO: Referências aos Modos Operacionais
+    # ----------------------------------------------------------
+    
+    operational_modes:
+      lite:
+        spec_file: "modes/ae_lite.yaml"
+        section: "ae3_lite"
+        enabled: true
+        description: "Minimal toolkit with 5 essential tools"
+      
+      fullstack:
+        spec_file: "modes/ae_fullstack.yaml"
+        section: "ae3_fullstack"
+        enabled: true
+        description: "Complete toolkit with 40+ tools"
+    
+    # ----------------------------------------------------------
+    # Dependencies
+    # ----------------------------------------------------------
+    
+    depends_on:
+      - component: "AE0"
+        reason: "Requer bootstrap e validação estrutural"
+        unlock_priority: 1
+      
+      - component: "AE1"
+        reason: "Usa cognitive context para operações inteligentes (fullstack)"
+        unlock_priority: 2
+        consumes:
+          lite: []
+          fullstack: [cognitive_context, pattern_insights]
+      
+      - component: "AE2"
+        reason: "Recebe orquestração e decisões estratégicas"
+        unlock_priority: 3
+        consumes:
+          lite: [basic_orchestration_plan]
+          fullstack: [orchestration_plan, execution_directives]
+    
+    orchestrated_by:
+      - component: "AE2"
+        reason: "AE2 decide quais ferramentas usar e quando"
+        provides_to_AE2:
+          - tool_availability
+          - execution_results
+          - tool_health_status
+    
+    used_by:
+      - "project_specific_agents"
+      - "external_systems"
+      - "workflow_engines"
+    
+    forbidden_responsibilities:
+      - bootstrap
+      - decisao_estrategica
+      - orquestracao
+      - gestao_de_memoria
+      - aprendizado
+      - modificacao_de_contratos
+      - mode_selection
+    
+    guarantees:
+      - execucao_deterministiva_best_effort
+      - ferramentas_isoladas
+      - resultados_auditaveis
+      - rollback_possivel (fullstack)
+      - extensibilidade_controlada (fullstack)
+      - mode_compliance
+
+# ------------------------------------------------------------
+# Propósito (Atualizado)
+# ------------------------------------------------------------
+
+purpose: >
+  Ser a camada de execução operacional do Arqos Engine, fornecendo
+  um toolkit modular de ferramentas reutilizáveis que executam
+  operações concretas. Opera sob orquestração do AE2, usando contexto
+  do AE1 (fullstack), sem tomar decisões estratégicas. É o "músico"
+  que executa a partitura definida pelo maestro (AE2).
+  
+  Adapta suas capacidades ao modo operacional: LITE (5 ferramentas
+  essenciais) ou FULLSTACK (40+ ferramentas completas).
+
+# ------------------------------------------------------------
+# Escopo e Limites (Mode-Aware)
+# ------------------------------------------------------------
+
+scope:
+  core_responsibilities:
+    common:
+      - "Executar operações concretas"
+      - "Fornecer ferramentas modulares e reutilizáveis"
+      - "Transformar e processar informações"
+      - "Gerar outputs estruturados"
+      - "Reportar resultados de execução"
+    
+    lite_only:
+      - "5 ferramentas essenciais apenas"
+      - "Execução sequencial única"
+      - "Sem custom plugins"
+    
+    fullstack_only:
+      - "40+ ferramentas completas"
+      - "Integrar dados de múltiplas fontes"
+      - "Execução paralela"
+      - "Custom plugins suportados"
+      - "Hot reload de ferramentas"
+  
+  explicitly_out_of_scope:
+    - "Decidir qual ferramenta usar (responsabilidade do AE2)"
+    - "Definir estratégia de execução (responsabilidade do AE2)"
+    - "Armazenar memória de longo prazo (responsabilidade do AE1)"
+    - "Aprender padrões (responsabilidade do AE1)"
+    - "Validar contratos (responsabilidade do AE0)"
+    - "Bootstrap ou configuração (responsabilidade do AE0)"
+    - "Selecionar modo operacional"
+
+# ------------------------------------------------------------
+# Arquitetura do Pipeline (Mode-Aware)
+# ------------------------------------------------------------
+
+pipeline_architecture:
+  description: "Pipeline operacional estruturado em 4 fases"
+  
+  phases:
+    recebe:
+      description: "Entrada e validação de dados"
+      responsibility: "Capturar, validar e preparar inputs"
+      tools_count:
+        lite: 1
+        fullstack: 4
+      
+    colhe:
+      description: "Coleta e integração de dados"
+      responsibility: "Buscar, extrair e unificar informações"
+      tools_count:
+        lite: 1
+        fullstack: 8
+      
+    processa:
+      description: "Transformação e análise"
+      responsibility: "Processar, gerar e otimizar"
+      tools_count:
+        lite: 2
+        fullstack: 20+
+      
+    fornece:
+      description: "Saída e entrega"
+      responsibility: "Formatar, notificar e responder"
+      tools_count:
+        lite: 1
+        fullstack: 6
+  
+  flow_control:
+    orchestrated_by: "AE2"
+    tools_are:
+      lite: "stateless_and_simple"
+      fullstack: "stateless_and_composable"
+    execution_model:
+      lite: "sequential_only"
+      fullstack: "parallel_where_possible"
+
+# ------------------------------------------------------------
+# Ferramentas: LITE MODE (5 Essential Tools)
+# ------------------------------------------------------------
+
+tools_lite:
+  enabled_count: 5
+  
+  recebe_phase:
+    - UserIntentParser:
+        id: T1
+        description: "Extract structured intent from user input"
+        features: minimal
+        timeout_ms: 2000
+        input_schema: simple
+        output_schema: structured_intent
+  
+  colhe_phase:
+    - InputValidator:
+        id: T2
+        description: "Basic input validation"
+        features: [type_checking, required_fields]
+        timeout_ms: 1000
+        disabled_features: [deep_validation, cross_field_checks]
+  
+  processa_phase:
+    - ChainOfThoughtGenerator:
+        id: T3
+        description: "Basic step-by-step reasoning"
+        features: [basic_reasoning, step_generation]
+        max_depth: 3
+        timeout_ms: 10000
+        disabled_features: [advanced_reasoning, backtracking]
+    
+    - InsightSummarizer:
+        id: T4
+        description: "Simple text summarization"
+        features: [basic_summary, key_points]
+        max_length: 500_chars
+        timeout_ms: 3000
+        disabled_features: [advanced_nlp, semantic_analysis]
+  
+  fornece_phase:
+    - ClauseGeneration:
+        id: T5
+        description: "Simple text generation"
+        features: [template_based, basic_composition]
+        timeout_ms: 3000
+        disabled_features: [creative_writing, style_transfer]
+  
+  disabled_tools: all_others
+  
+  tool_capabilities:
+    multimodal: false
+    ml_based: false
+    external_apis: false
+    complex_processing: false
+    custom_plugins: false
+    hot_reload: false
+
+# ------------------------------------------------------------
+# Ferramentas: FULLSTACK MODE (40+ Complete Tools)
+# ------------------------------------------------------------
+
+tools_fullstack:
+  enabled_count: 40+
+  
+  recebe_phase:
+    - UserIntentParser:
+        id: T1
+        description: "Extract structured intent"
+        features: advanced
+        timeout_ms: 3000
+    
+    - DataAnonymizer:
+        id: T2
+        description: "LGPD-compliant anonymization"
+        features: [pii_detection, reversible_with_key]
+        timeout_ms: 2000
+    
+    - Webhook:
+        id: T3
+        description: "Async external inputs"
+        features: [async_handling, queue_management]
+        timeout_ms: 5000
+    
+    - HTTP_Request:
+        id: T4
+        description: "Sync HTTP handling"
+        features: [rest_api, authentication]
+        timeout_ms: 5000
+  
+  colhe_phase:
+    - ExcelDataProcessor:
+        id: T5
+        description: "Spreadsheet extraction"
+        features: [xlsx, xls, csv, formulas]
+        timeout_ms: 10000
+    
+    - MarketDataFetcher:
+        id: T6
+        description: "Real-time market data"
+        features: [yahoo, alpha_vantage, custom]
+        timeout_ms: 15000
+    
+    - UserProfileManager:
+        id: T7
+        description: "Profile management"
+        features: [get, update, delete]
+        storage: "AE1.memoria_longo_prazo"
+        timeout_ms: 2000
+    
+    - InputValidator:
+        id: T8
+        description: "Deep validation"
+        features: [type_checking, cross_field, schema_validation]
+        timeout_ms: 1000
+    
+    - DataIntegration:
+        id: T9
+        description: "Multi-source integration"
+        features: [union, intersection, custom_merge]
+        timeout_ms: 5000
+    
+    - EmbeddingLookup:
+        id: T10
+        description: "Semantic search"
+        uses: "AE1.memoria_vetorial"
+        timeout_ms: 2000
+    
+    - TaskDiagnoser:
+        id: T11
+        description: "Task classification"
+        uses: "AE1.cognitive_context"
+        timeout_ms: 1500
+    
+    - HybridSearch:
+        id: T12
+        description: "Vector + text search"
+        features: [semantic, keyword, hybrid]
+        timeout_ms: 3000
+  
+  processa_phase:
+    - ChainOfThoughtGenerator:
+        id: T13
+        description: "Advanced reasoning"
+        features: [deep_reasoning, backtracking, verification]
+        max_depth: unlimited
+        timeout_ms: 30000
+    
+    - FinancialManager:
+        id: T14
+        description: "Financial coordination"
+        features: [portfolio, risk, compliance]
+        timeout_ms: 20000
+    
+    - ScenarioSimulator:
+        id: T15
+        description: "Predictive modeling"
+        features: [monte_carlo, what_if, sensitivity]
+        timeout_ms: 30000
+    
+    - PricingEngine:
+        id: T16
+        description: "Dynamic pricing"
+        features: [optimization, elasticity, competition]
+        timeout_ms: 10000
+    
+    - InvestmentPlanner:
+        id: T17
+        description: "Portfolio optimization"
+        features: [diversification, rebalancing, tax_efficiency]
+        timeout_ms: 20000
+    
+    - MultimodalSynthesizer:
+        id: T18
+        description: "Text/image/audio integration"
+        features: [fusion, alignment, generation]
+        timeout_ms: 30000
+    
+    - PredictiveOptimizer:
+        id: T19
+        description: "Process optimization"
+        features: [ml_based, constraint_satisfaction]
+        timeout_ms: 25000
+    
+    - TaxComplianceSimulator:
+        id: T20
+        description: "Tax conformity"
+        features: [simulation, optimization, reporting]
+        timeout_ms: 15000
+    
+    # ... 13+ more tools in processa
+  
+  fornece_phase:
+    - FeedbackAndAlerting:
+        id: T34
+        description: "Intelligent alerts"
+        features: [priority_routing, escalation, batching]
+        timeout_ms: 3000
+    
+    - WebResearchUpdater:
+        id: T35
+        description: "Knowledge updates"
+        features: [web_search, extraction, summarization]
+        timeout_ms: 20000
+    
+    - ClauseGeneration:
+        id: T36
+        description: "Advanced text generation"
+        features: [creative, style_transfer, personalization]
+        timeout_ms: 10000
+    
+    - Traducao:
+        id: T37
+        description: "Multi-language translation"
+        features: [50_languages, context_aware]
+        timeout_ms: 5000
+    
+    - InsightSummarizer:
+        id: T38
+        description: "Executive summaries"
+        features: [advanced_nlp, semantic_analysis, bullet_points]
+        timeout_ms: 5000
+    
+    - VersionManager:
+        id: T39
+        description: "Artifact versioning"
+        features: [semantic_versioning, changelog, rollback]
+        timeout_ms: 2000
+  
+  tool_capabilities:
+    multimodal: true
+    ml_based: true
+    external_apis: true
+    complex_processing: true
+    custom_plugins: true
+    hot_reload: true
+
+# ------------------------------------------------------------
+# Execution Policy (Mode-Aware)
+# ------------------------------------------------------------
+
+execution_policy:
+  
+  lite:
+    deterministic: true
+    max_concurrent_tools: 1
+    timeout_ms: 20000
+    
+    retry_policy:
+      enabled: false
+      reason: "Fail fast in LITE mode"
+    
+    fallback_policy:
+      on_tool_failure:
+        action: fail_fast
+        emit_diagnostic: true
+        rollback: false
+  
+  fullstack:
+    deterministic: false
+    max_concurrent_tools: 50
+    timeout_ms: 300000  # 5 min
+    
+    retry_policy:
+      enabled: true
+      max_retries: 3
+      backoff: exponential
+      retry_on: [timeout, transient_error]
+    
+    fallback_policy:
+      on_tool_failure:
+        action: attempt_graceful_degradation
+        emit_diagnostic: true
+        rollback: true
+        partial_results: true
+
+# ------------------------------------------------------------
+# Custom Tools & Plugins (FULLSTACK Only)
+# ------------------------------------------------------------
+
+custom_tools:
+  
+  lite:
+    enabled: false
+    reason: "No custom tools in LITE mode"
+  
+  fullstack:
+    enabled: true
+    registration: dynamic
+    hot_reload: true
+    
+    registration_process:
+      - define_tool_contract
+      - implement_tool_interface
+      - register_with_ae3
+      - validate_with_ae0
+      - deploy_to_runtime
+    
+    tool_contract_schema:
+      required_fields:
+        - tool_id: string
+        - name: string
+        - description: string
+        - phase: enum[recebe, colhe, processa, fornece]
+        - input_schema: object
+        - output_schema: object
+        - timeout_ms: integer
+      
+      optional_fields:
+        - depends_on: array
+        - uses_ae1: boolean
+        - requires_approval: boolean
+        - cache_ttl_seconds: integer
+    
+    example_custom_tools:
+      - SARVOSPsychologicalRadar: "Análise psicológica específica"
+      - VetherisgCombatSimulator: "Simulação de combate RPG"
+      - OpusVertisRSVPManager: "Gerenciamento de RSVP"
+  
+  plugin_architecture:
+    lite:
+      supported: false
+    
+    fullstack:
+      supported: true
+      
+      plugin_types:
+        - data_connectors
+        - processors
+        - formatters
+        - validators
+        - transformers
+      
+      plugin_lifecycle:
+        - load_on_demand
+        - hot_reload_supported
+        - version_compatibility_check
+        - dependency_resolution
+
+# ------------------------------------------------------------
+# Orquestração e Integração (Mode-Aware)
+# ------------------------------------------------------------
+
+orchestration_integration:
+  
+  receives_from_ae2:
+    lite:
+      - basic_orchestration_plan:
+          description: "Plano simplificado"
+          format: "simplified"
+          contains: [tool_name, tool_input, timeout]
+          source: "AE2.internal_orchestrator"
+    
+    fullstack:
+      - orchestration_plan:
+          description: "Plano completo de execução"
+          format: "comprehensive"
+          contains:
+            - tool_sequence
+            - dependencies
+            - timeout_budget
+            - rollback_policy
+            - priority
+          source: "AE2.distributed_execution_manager"
+      
+      - execution_context:
+          description: "Contexto rico para execução"
+          format: "rich"
+          contains:
+            - user_context
+            - cognitive_context_from_ae1
+            - strategic_directives
+            - resource_limits
+          source: "AE2.contextual_awareness_module"
+  
+  provides_to_ae2:
+    lite:
+      - execution_results:
+          description: "Resultados simplificados"
+          format: "simple"
+          contains: [tool_output, success, duration_ms]
+      
+      - tool_availability:
+          description: "Status básico"
+          format: "simple"
+          contains: [tool_health_status]
+    
+    fullstack:
+      - execution_results:
+          description: "Resultados completos"
+          format: "comprehensive"
+          contains:
+            - outputs
+            - performance_metrics
+            - errors
+            - warnings
+            - partial_results
+      
+      - tool_availability:
+          description: "Status detalhado"
+          format: "real_time"
+          contains:
+            - tool_health_status
+            - load_metrics
+            - estimated_latency
+  
+  provides_to_ae1:
+    lite:
+      - execution_logs:
+          description: "Logs básicos"
+          format: "ExecutionLog"
+          frequency: "on_complete"
+    
+    fullstack:
+      - execution_logs:
+          description: "Logs detalhados"
+          format: "detailed"
+          frequency: "on_complete"
+          contains:
+            - tool_invocations
+            - inputs
+            - outputs
+            - duration
+            - errors
+
+# ------------------------------------------------------------
+# Health & Observability (Mode-Aware)
+# ------------------------------------------------------------
+
+health:
+  checks:
+    common:
+      - name: "tool_availability"
+        interval_ms:
+          lite: 60000
+          fullstack: 30000
+        checks:
+          lite: ["core_5_tools_responsive"]
+          fullstack: ["all_40_tools_responsive"]
+    
+    lite_specific:
+      - name: "resource_health_basic"
+        interval_ms: 30000
+        checks:
+          - "memory_usage_within_limits: 50MB"
+    
+    fullstack_specific:
+      - name: "resource_health"
+        interval_ms: 10000
+        checks:
+          - "memory_usage_acceptable: 500MB"
+          - "cpu_usage_acceptable: 80%"
+      
+      - name: "dependency_health"
+        interval_ms: 60000
+        checks:
+          - "AE1_reachable"
+          - "AE2_reachable"
+          - "external_services_available"
+  
+  failure_policy:
+    on_tool_unavailable:
+      lite: "mark_as_down + abort"
+      fullstack: "mark_as_down + notify_AE2 + attempt_recovery"
+    
+    on_resource_exhaustion:
+      lite: "alert"
+      fullstack: "throttle_executions + alert"
+    
+    on_dependency_failure:
+      lite: "abort"
+      fullstack: "graceful_degradation + notify"
+
+observability:
+  metrics:
+    common:
+      - tool_invocation_count
+      - average_execution_time_per_tool
+      - success_rate_per_tool
+    
+    fullstack_only:
+      - error_rate_per_tool
+      - resource_usage_per_tool
+      - concurrent_executions
+      - queue_depth
+  
+  logs:
+    level:
+      lite: "info"
+      fullstack: "debug"
+    format: "structured_json"
+    retention: "30 days"
+    includes:
+      - tool_inputs
+      - tool_outputs
+      - errors
+      - performance
+  
+  tracing:
+    enabled:
+      lite: false
+      fullstack: true
+    trace_tool_chains:
+      lite: false
+      fullstack: true
+    integrates_with:
+      lite: "console"
+      fullstack: "observability_stack"
+
+# ------------------------------------------------------------
+# Guarantees (Mode-Aware)
+# ------------------------------------------------------------
+
+guarantees:
+  common:
+    - no_decisions
+    - orchestrated_only
+    - mode_compliance
+  
+  lite_specific:
+    - execucao_deterministiva
+    - ferramentas_isoladas
+    - resultados_auditaveis
+  
+  fullstack_specific:
+    - execucao_deterministiva_best_effort
+    - ferramentas_isoladas_e_compostas
+    - resultados_auditaveis
+    - rollback_capability
+    - extensibilidade_controlada
+
+# ------------------------------------------------------------
+# Princípios de Design (Atualizados)
+# ------------------------------------------------------------
+
+principles:
+  - ferramentas_como_funcoes
+  - execucao_sem_decisao
+  - modularidade_extrema
+  - extensibilidade_controlada (fullstack)
+  - observabilidade_total
+  - isolamento_de_falhas
+  - integracao_com_cognicao (fullstack)
+  - orquestracao_externa
+  - mode_compliance
+
+# ------------------------------------------------------------
+# Definição Canônica (Atualizada)
+# ------------------------------------------------------------
+
+definition: >
+  AE3 (DNABase Pipeline) é a camada de execução operacional do
+  Arqos Engine. Ele não pensa, não decide, não aprende. Ele executa.
+  É um toolkit modular de ferramentas reutilizáveis que processam
+  dados, geram outputs e integram sistemas. Opera sob orquestração
+  do AE2, usando contexto do AE1 (fullstack), fornecendo os "músculos"
+  que transformam decisões estratégicas em resultados concretos.
+  
+  Adapta suas capacidades ao modo operacional: LITE (5 ferramentas
+  essenciais) ou FULLSTACK (40+ ferramentas completas).
+
+# ------------------------------------------------------------
+# Status
+# ------------------------------------------------------------
+
+status:
+  readiness: "production_ready"
+  tool_count:
+    lite: 5
+    fullstack: 40+
+  extensibility:
+    lite: "none"
+    fullstack: "high"
+  governance_level: "subordinado"
+  integration_maturity: "native_with_AE2_and_AE1"
+  execution_model:
+    lite: "sequential_only"
+    fullstack: "orchestrated_parallel_pipeline"
+  mode_awareness: "full"

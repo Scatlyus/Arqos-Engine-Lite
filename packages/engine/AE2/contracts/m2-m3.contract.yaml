@@ -1,0 +1,3 @@
+contract_id: "m2_m3_orchestration_to_audit"
+version: "1.0.0"
+enabled_in: fullstack

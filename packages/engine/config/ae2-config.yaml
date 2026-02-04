@@ -1,0 +1,66 @@
+ae2_configuration:
+  mode: fullstack
+
+  modules:
+    strategic_core:
+      enabled: true
+      goal_alignment_threshold: 0.7
+      planning_horizon: short_term
+
+    internal_orchestrator:
+      enabled: true
+      max_concurrent_orchestrations: 10
+      workflow_timeout_ms: 60000
+
+    decision_auditor:
+      enabled: true
+      log_level: comprehensive
+      retention_days: 90
+
+    distributed_execution:
+      enabled: true
+      max_agents: 50
+      load_balancing_strategy: round_robin
+
+    contextual_awareness:
+      enabled: true
+      environment_scan_interval_ms: 30000
+
+    predictive_optimization:
+      enabled: true
+      simulation_depth: 3
+      scenarios_per_decision: 5
+
+    self_reflection:
+      enabled: true
+      reflection_frequency_hours: 24
+
+    evolution_manager:
+      enabled: true
+      auto_versioning: true
+      capability_upgrade_threshold: 0.8
+
+  decision_policy:
+    default_strategy: hybrid
+    timeout_ms: 15000
+    confidence_threshold: 0.75
+
+    strategies:
+      rule_based:
+        enabled: true
+        rules_file: rules/strategic-rules.yaml
+
+      ml_based:
+        enabled: true
+        model: gpt-4
+        temperature: 0.3
+
+      consensus:
+        enabled: true
+        min_agreement: 0.66
+
+  orchestration:
+    model: internal_flow
+    max_sequence_length: 20
+    allow_parallel: true
+    rollback_enabled: true

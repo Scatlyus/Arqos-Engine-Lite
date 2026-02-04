@@ -1,0 +1,101 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": [
+    "id",
+    "version",
+    "role",
+    "unlock_priority",
+    "guarantees"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "enum": [
+        "AE2"
+      ]
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "orquestracao_estrategica"
+      ]
+    },
+    "unlock_priority": {
+      "type": "integer",
+      "enum": [
+        1
+      ]
+    },
+    "lite": {
+      "type": "object",
+      "required": [
+        "modules"
+      ],
+      "properties": {
+        "modules": {
+          "type": "object",
+          "required": [
+            "enabled_count"
+          ],
+          "properties": {
+            "enabled_count": {
+              "type": "integer",
+              "enum": [
+                3
+              ]
+            }
+          }
+        }
+      }
+    },
+    "fullstack": {
+      "type": "object",
+      "required": [
+        "modules",
+        "cognitive_contracts"
+      ],
+      "properties": {
+        "modules": {
+          "type": "object",
+          "required": [
+            "enabled_count"
+          ],
+          "properties": {
+            "enabled_count": {
+              "type": "integer",
+              "enum": [
+                8
+              ]
+            }
+          }
+        },
+        "cognitive_contracts": {
+          "type": "object",
+          "required": [
+            "enabled",
+            "count"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "enum": [
+                true
+              ]
+            },
+            "count": {
+              "type": "integer",
+              "enum": [
+                8
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

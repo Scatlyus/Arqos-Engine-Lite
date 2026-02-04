@@ -1,0 +1,40 @@
+# Tool Contract: Traducao
+contract_id: "tool_t22_traducao"
+version: "1.0.0"
+
+tool_id: "T22"
+name: "Traducao"
+description: "Translate text with glossary support and language detection."
+phase: fornece
+
+enabled_in: fullstack
+
+timeout_ms: 2500
+
+input_schema:
+  type: object
+  required: [text, target_lang]
+  properties:
+    text:
+      type: string
+    source_lang:
+      type: string
+    target_lang:
+      type: string
+      enum: [pt, en, es]
+    glossary:
+      type: object
+    quality_level:
+      type: string
+      enum: [fast, balanced, high]
+
+output_schema:
+  type: object
+  required: [translated_text]
+  properties:
+    translated_text:
+      type: string
+    detected_lang:
+      type: string
+    quality_score:
+      type: number

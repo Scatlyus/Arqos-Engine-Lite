@@ -1,0 +1,10 @@
+contract_id: "ae3_ae1_execution_logs"
+version: "1.0.0"
+
+provides:
+  - name: execution_logs
+    format: json
+    frequency: on_request
+    schema:
+      type: object
+      required: [tool_name, input, output, duration_ms, success]

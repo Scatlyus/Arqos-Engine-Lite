@@ -1,0 +1,66 @@
+# Tool Contract: EmbeddingLookup
+contract_id: "tool_t11_embedding_lookup"
+version: "1.0.0"
+
+tool_id: "T11"
+name: "EmbeddingLookup"
+description: "Semantic lookup using vector embeddings with provider fallback and caching."
+phase: colhe
+
+enabled_in: fullstack
+
+timeout_ms: 4000
+
+input_schema:
+  type: object
+  required: [query]
+  properties:
+    query:
+      type: string
+    queries:
+      type: array
+      items:
+        type: string
+    provider:
+      type: string
+      enum: [openai, cohere, local]
+    model:
+      type: string
+    top_k:
+      type: number
+    namespace:
+      type: string
+    filters:
+      type: object
+    cache_ttl_seconds:
+      type: number
+
+output_schema:
+  type: object
+  required: [matches]
+  properties:
+    matches:
+      type: array
+      items:
+        type: object
+        required: [id, score]
+        properties:
+          id:
+            type: string
+          score:
+            type: number
+          text:
+            type: string
+          metadata:
+            type: object
+    provider_used:
+      type: string
+    embedding_dim:
+      type: number
+    cache_hit:
+      type: boolean
+    latency_ms:
+      type: number
+
+optional_fields:
+  cache_ttl_seconds: 300

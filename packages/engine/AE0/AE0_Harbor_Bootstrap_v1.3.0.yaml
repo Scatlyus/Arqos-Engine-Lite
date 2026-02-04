@@ -1,0 +1,843 @@
+# ============================================================
+# Arqos Engine — AE0 (EBA)
+# Executive Bootstrap Agent — v1.3.0 (Mode-Aware)
+# ============================================================
+
+AE0:
+  id: "AH"
+  name: "Harbor Bootstrap"
+  alias: "EBA"
+  version: "1.3.0"
+  role: "bootstrap_e_acoplamento"
+  nature:
+    - operacional
+    - deterministico
+    - nao_cognitivo
+    - stateless_entre_runs
+    - mode_aware  # ← NOVO: Ciente dos modos operacionais
+
+  arqos_binding:
+    engine: "Arqos Engine"
+    canonical_role: "AE0"
+    contract_version: "1.0.0"
+    
+    # ----------------------------------------------------------
+    # NOVO: Referências aos Modos Operacionais
+    # ----------------------------------------------------------
+    
+    operational_modes:
+      lite:
+        spec_file: "modes/ae_lite.yaml"
+        description: "Minimal operational mode for testing and validation"
+        enabled: true
+      
+      fullstack:
+        spec_file: "modes/ae_fullstack.yaml"
+        description: "Complete operational mode for production deployments"
+        enabled: true
+    
+    mode_resolution:
+      strategy: "environment_variable"
+      env_var: "ARQOS_MODE"
+      default: "lite"
+      valid_values: ["lite", "fullstack"]
+      fallback_on_invalid: "lite"
+    
+    # ----------------------------------------------------------
+    # Governança (Mode-Aware)
+    # ----------------------------------------------------------
+    
+    governs:
+      - component: "AE2"
+        unlock_condition: "mode_allows && post_validation"
+        unlock_priority: 1  # ← AE2 primeiro (CORRETO)
+        reason: "AE1 depends on AE2 for strategic context"
+        
+        mode_specific:
+          lite:
+            timeout_ms: 3000
+            validation_depth: basic
+          
+          fullstack:
+            timeout_ms: 8000
+            validation_depth: comprehensive
+      
+      - component: "AE1"
+        unlock_condition: "ae2_ready && post_validation"
+        unlock_priority: 2  # ← AE1 depois (CORRETO)
+        reason: "AE1 requires AE2 strategic context before initialization"
+        
+        pre_unlock_checks:
+          lite:
+            - ae2_minimal_modules_ready
+            - state_store_initialized
+          
+          fullstack:
+            - ae2_all_modules_ready
+            - ae2_cognitive_contracts_validated
+            - state_store_connected
+            - persistent_storage_ready
+            - memory_layers_allocated
+        
+        mode_specific:
+          lite:
+            timeout_ms: 3000
+            validation_depth: basic
+          
+          fullstack:
+            timeout_ms: 8000
+            validation_depth: comprehensive
+      
+      - component: "AE3"
+        unlock_condition: "ae1_ready && ae2_ready && post_validation"
+        unlock_priority: 3  # ← AE3 por último
+        reason: "AE3 needs both AE1 and AE2 operational"
+        
+        mode_specific:
+          lite:
+            timeout_ms: 3000
+            tools_count: 5
+          
+          fullstack:
+            timeout_ms: 8000
+            tools_count: 40+
+    
+    forbidden_responsibilities:
+      - decisao_estrategica
+      - aprendizagem
+      - interpretacao_de_conhecimento
+      - acesso_a_RAG
+      - orquestracao_cognitiva
+      - mode_selection  # ← AE0 não decide o modo, apenas aplica
+    
+    guarantees:
+      - subida_controlada
+      - contratos_validos
+      - isolamento_cognitivo
+      - falha_segura
+      - reproducibilidade
+      - dependencias_resolvidas
+      - ordem_unlock_correta  # ← GARANTIA EXPLÍCITA
+
+# ------------------------------------------------------------
+# Responsabilidades (Expandidas com Mode-Awareness)
+# ------------------------------------------------------------
+
+responsibilities:
+  core:
+    - ler_kit_yaml_from_path
+    - validar_schemas_contra_spec
+    - validar_contratos_estruturais
+    - resolver_modo_via_lookup  # ← ATUALIZADO: Resolve LITE vs FULLSTACK
+    - resolver_ordem_de_dependencias
+    - validar_ordem_unlock  # ← NOVO: Garante AE2→AE1→AE3
+    - inicializar_runtime_isolado
+    - bind_com_projeto_host
+    - expor_interfaces_tipadas
+  
+  mode_specific:
+    lite:
+      - validar_contratos_basicos
+      - inicializar_memoria_volatil
+      - configurar_event_stream_opcional
+      - habilitar_3_modulos_ae2
+      - habilitar_5_tools_ae3
+    
+    fullstack:
+      - validar_contratos_completos
+      - validar_cognitive_contracts
+      - inicializar_memoria_persistente
+      - configurar_event_stream_persistente
+      - habilitar_8_modulos_ae2
+      - habilitar_40_tools_ae3
+      - conectar_servicos_externos
+      - configurar_high_availability
+  
+  reliability:
+    - health_check_continuo
+    - circuit_breaker
+    - fail_safe_com_diagnostico
+    - mode_compatibility_check  # ← NOVO
+
+# ------------------------------------------------------------
+# Entradas (Inputs) - Mode-Aware
+# ------------------------------------------------------------
+
+inputs:
+  required_env:
+    - name: "ARQOS_MODE"
+      type: "enum[lite|fullstack]"
+      default: "lite"
+      description: "Operational mode selection"
+      validation: "must_match_valid_values"
+    
+    - name: "ARQOS_KIT_PATH"
+      type: "filepath"
+      description: "Caminho para kit.yaml"
+    
+    - name: "ARQOS_SCHEMAS_PATH"
+      type: "dirpath"
+      description: "Diretório com schemas de validação"
+    
+    # Mode-specific required inputs
+    - name: "ARQOS_STATE_STORE_PATH"
+      type: "filepath"
+      description: "Localização do state_store"
+      required_in: [lite, fullstack]
+      default:
+        lite: "/tmp/arqos_state.json"
+        fullstack: "postgresql://..."
+    
+    - name: "ARQOS_EVENT_STREAM_ENABLED"
+      type: "boolean"
+      description: "Se event stream está habilitado"
+      default:
+        lite: false
+        fullstack: true
+  
+  optional_env:
+    - name: "ARQOS_BOOTSTRAP_TIMEOUT_MS"
+      type: "integer"
+      default:
+        lite: 5000
+        fullstack: 18000
+    
+    - name: "ARQOS_VALIDATION_DEPTH"
+      type: "enum[basic|comprehensive]"
+      default:
+        lite: "basic"
+        fullstack: "comprehensive"
+    
+    # FULLSTACK-specific
+    - name: "ARQOS_PERSISTENT_BACKEND"
+      type: "string"
+      required_in: [fullstack]
+      description: "Backend for persistent storage (postgresql, mysql, etc)"
+    
+    - name: "ARQOS_VECTORIAL_BACKEND"
+      type: "string"
+      required_in: [fullstack]
+      description: "Backend for vectorial memory (pinecone, weaviate, etc)"
+    
+    - name: "ARQOS_EVENT_STREAM_BACKEND"
+      type: "string"
+      required_in: [fullstack]
+      description: "Backend for event stream (redis, kafka, etc)"
+  
+  runtime_context:
+    - contexto_do_projeto: "Injetado pelo host system"
+    - strategic_objectives: "Objetivos de alto nível (opcional)"
+    - mode_override: "Permite override do modo via config"
+
+# ------------------------------------------------------------
+# Validação de Contratos (Mode-Aware)
+# ------------------------------------------------------------
+
+validation_contracts:
+  
+  # Validações comuns a todos os modos
+  schema_integrity:
+    spec: "JSON Schema Draft 7"
+    schemas:
+      - "${ARQOS_SCHEMAS_PATH}/ae0_contract.schema.json"
+      - "${ARQOS_SCHEMAS_PATH}/ae1_contract.schema.json"
+      - "${ARQOS_SCHEMAS_PATH}/ae2_contract.schema.json"
+      - "${ARQOS_SCHEMAS_PATH}/ae3_contract.schema.json"
+      - "${ARQOS_SCHEMAS_PATH}/kit.schema.json"
+    on_failure: "abort_with_diagnostic"
+  
+  # ← Validações específicas do modo LITE
+  lite_mode_validations:
+    enabled_when: "mode == lite"
+    
+    ae1_lite_compliance:
+      description: "Valida conformidade do AE1 com modo LITE"
+      checks:
+        - "short_term_memory_only"
+        - "no_long_term_memory"
+        - "no_vectorial_memory"
+        - "no_learning_enabled"
+      on_failure: "abort_with_diagnostic"
+    
+    ae2_lite_compliance:
+      description: "Valida conformidade do AE2 com modo LITE"
+      checks:
+        - "exactly_3_modules_enabled"
+        - "modules_are: [strategic_core, internal_orchestrator, decision_auditor]"
+        - "no_cognitive_contracts"
+      on_failure: "abort_with_diagnostic"
+    
+    ae3_lite_compliance:
+      description: "Valida conformidade do AE3 com modo LITE"
+      checks:
+        - "exactly_5_tools_enabled"
+        - "no_custom_plugins"
+        - "no_parallel_execution"
+      on_failure: "abort_with_diagnostic"
+  
+  # ← Validações específicas do modo FULLSTACK
+  fullstack_mode_validations:
+    enabled_when: "mode == fullstack"
+    
+    ae1_fullstack_compliance:
+      description: "Valida conformidade do AE1 com modo FULLSTACK"
+      checks:
+        - "all_3_memory_layers_enabled"
+        - "learning_enabled"
+        - "persistent_backend_connected"
+        - "vectorial_backend_connected"
+      on_failure: "abort_with_diagnostic"
+    
+    ae2_fullstack_compliance:
+      description: "Valida conformidade do AE2 com modo FULLSTACK"
+      checks:
+        - "all_8_modules_enabled"
+        - "all_cognitive_contracts_validated"
+        - "modules_are: [strategic_core, internal_orchestrator, distributed_execution_manager, contextual_awareness_module, predictive_optimization_module, self_reflection_module, audit_and_compliance_module, evolution_manager]"
+      on_failure: "abort_with_diagnostic"
+    
+    ae2_cognitive_contracts:
+      description: "Valida contratos cognitivos entre módulos do AE2"
+      contracts:
+        - name: "strategic_core → internal_orchestrator"
+          schema: "${ARQOS_SCHEMAS_PATH}/cognitive_contracts/sc_to_io.schema.json"
+        
+        - name: "internal_orchestrator → contextual_awareness"
+          schema: "${ARQOS_SCHEMAS_PATH}/cognitive_contracts/io_to_ca.schema.json"
+        
+        - name: "contextual_awareness → predictive_optimization"
+          schema: "${ARQOS_SCHEMAS_PATH}/cognitive_contracts/ca_to_po.schema.json"
+        
+        - name: "predictive_optimization → strategic_core"
+          schema: "${ARQOS_SCHEMAS_PATH}/cognitive_contracts/po_to_sc.schema.json"
+        
+        - name: "internal_orchestrator → distributed_execution"
+          schema: "${ARQOS_SCHEMAS_PATH}/cognitive_contracts/io_to_de.schema.json"
+        
+        - name: "distributed_execution → audit_compliance"
+          schema: "${ARQOS_SCHEMAS_PATH}/cognitive_contracts/de_to_ac.schema.json"
+        
+        - name: "audit_compliance → self_reflection"
+          schema: "${ARQOS_SCHEMAS_PATH}/cognitive_contracts/ac_to_sr.schema.json"
+        
+        - name: "self_reflection → evolution_manager"
+          schema: "${ARQOS_SCHEMAS_PATH}/cognitive_contracts/sr_to_em.schema.json"
+      
+      invariants:
+        - "no_circular_dependencies_between_modules"
+        - "all_payload_types_match"
+      on_failure: "abort_with_diagnostic"
+    
+    ae3_fullstack_compliance:
+      description: "Valida conformidade do AE3 com modo FULLSTACK"
+      checks:
+        - "minimum_40_tools_enabled"
+        - "all_4_phases_operational"
+        - "custom_plugins_supported"
+        - "parallel_execution_enabled"
+      on_failure: "abort_with_diagnostic"
+    
+    external_services:
+      description: "Valida conectividade com serviços externos"
+      services:
+        - persistent_storage
+        - vectorial_backend
+        - event_stream_backend
+      on_failure: "warn_and_degrade_gracefully"
+  
+  # Validação da ordem de unlock (CRÍTICA)
+  unlock_order_validation:
+    description: "Garante ordem correta de unlock: AE2 → AE1 → AE3"
+    rules:
+      - "AE2 must unlock before AE1"
+      - "AE1 must unlock before AE3"
+      - "AE1 depends on AE2"
+      - "AE3 depends on AE2 and AE1"
+    on_failure: "abort_with_diagnostic"
+    critical: true
+
+# ------------------------------------------------------------
+# Preparação do Ambiente (Mode-Aware)
+# ------------------------------------------------------------
+
+environment_preparation:
+  
+  lite_mode:
+    state_store:
+      action: "initialize_or_load"
+      path: "${ARQOS_STATE_STORE_PATH}"
+      type: in_memory
+      schema: "${ARQOS_SCHEMAS_PATH}/state_store_lite.schema.json"
+      initial_state:
+        version: "1.0"
+        mode: "lite"
+        timestamp: "bootstrap_time"
+        ae0_ready: false
+        ae1_ready: false
+        ae2_ready: false
+        ae3_ready: false
+      persist_on_exit: false
+    
+    event_stream:
+      action: "initialize_if_enabled"
+      enabled: "${ARQOS_EVENT_STREAM_ENABLED}"
+      type: in_memory
+      buffer_size: 50
+      retention_policy: "session_only"
+      on_failure: "warn_and_disable"
+    
+    memory:
+      short_term:
+        size_limit: 5_MB
+        retention: 1_day
+      long_term: disabled
+      vectorial: disabled
+  
+  fullstack_mode:
+    state_store:
+      action: "connect_or_create"
+      backend: "${ARQOS_PERSISTENT_BACKEND}"
+      connection_pool_size: 20
+      schema: "${ARQOS_SCHEMAS_PATH}/state_store_fullstack.schema.json"
+      initial_state:
+        version: "1.0"
+        mode: "fullstack"
+        timestamp: "bootstrap_time"
+        ae0_ready: false
+        ae1_ready: false
+        ae2_ready: false
+        ae3_ready: false
+        heuristic_version: "1.0.0"
+      backup_policy: incremental_daily
+      persist_on_exit: true
+    
+    event_stream:
+      action: "connect_required"
+      backend: "${ARQOS_EVENT_STREAM_BACKEND}"
+      type: persistent
+      buffer_size: 10000
+      retention_policy: "24_hours"
+      replication: 3
+      partitioning: true
+      on_failure: "abort"
+    
+    memory:
+      short_term:
+        size_limit: 100_MB
+        retention: 7_days
+      long_term:
+        backend: "${ARQOS_PERSISTENT_BACKEND}"
+        size_limit: 1_GB
+        retention: 180_days
+      vectorial:
+        backend: "${ARQOS_VECTORIAL_BACKEND}"
+        size_limit: 500_MB
+        dimensions: 768
+
+# ------------------------------------------------------------
+# Modos Operacionais (Canonical Reference)
+# ------------------------------------------------------------
+
+modes:
+  lite:
+    description: "Modo mínimo para testing, validation, CI/CD"
+    spec_file: "modes/ae_lite.yaml"
+    
+    enable:
+      - AE0: basic_bootstrap
+      - AE1: short_term_memory_only
+      - AE2: 3_modules
+      - AE3: 5_tools
+    
+    constraints:
+      ae1:
+        memory: short_term_only
+        learning: disabled
+        vectorial: disabled
+      
+      ae2:
+        modules: minimal_3
+        contracts: simplified
+        complexity: low
+      
+      ae3:
+        tools: minimal_5
+        concurrency: 1
+        plugins: disabled
+    
+    performance:
+      bootstrap_timeout_ms: 5000
+      total_execution_ms: 60000
+      memory_footprint_mb: 50
+    
+    use_cases:
+      allowed:
+        - unit_testing
+        - integration_testing
+        - ci_cd_validation
+        - local_development
+        - architecture_validation
+      
+      forbidden:
+        - production_deployments
+        - learning_intensive_applications
+        - complex_multi_agent_systems
+  
+  fullstack:
+    description: "Modo completo para production deployments"
+    spec_file: "modes/ae_fullstack.yaml"
+    
+    enable:
+      - AE0: comprehensive_bootstrap
+      - AE1: all_memory_layers + learning
+      - AE2: 8_modules + cognitive_contracts
+      - AE3: 40+_tools + plugins
+    
+    requirements:
+      persistent_storage: required
+      vectorial_backend: required
+      event_stream_backend: required
+      external_services: allowed
+    
+    performance:
+      bootstrap_timeout_ms: 18000
+      total_execution_ms: unlimited
+      memory_footprint_mb: 2048
+    
+    use_cases:
+      recommended:
+        - production_deployments
+        - complex_multi_agent_systems
+        - learning_intensive_applications
+        - mission_critical_systems
+        - enterprise_applications
+      
+      not_recommended:
+        - quick_testing
+        - minimal_validation
+        - resource_constrained_environments
+
+# ------------------------------------------------------------
+# Sequência Canônica de Inicialização (CORRECTED & Mode-Aware)
+# ------------------------------------------------------------
+
+bootstrap_sequence:
+  - step: "resolve_mode"
+    input: "${ARQOS_MODE}"
+    strategy: "deterministic_lookup"
+    output: "resolved_mode"
+    validation: "must_be_valid_mode"
+    on_invalid: "fallback_to_lite"
+  
+  - step: "load_mode_spec"
+    input: "resolved_mode"
+    action: "load_yaml_spec"
+    file:
+      lite: "modes/ae_lite.yaml"
+      fullstack: "modes/ae_fullstack.yaml"
+    output: "mode_config"
+    on_failure: "abort"
+  
+  - step: "load_kit_yaml"
+    input: "${ARQOS_KIT_PATH}"
+    output: "kit_config"
+    on_failure: "abort"
+  
+  - step: "validate_schemas"
+    input: "kit_config + schemas + mode_config"
+    validation: "schema_integrity"
+    on_failure: "abort_with_diagnostic"
+  
+  - step: "validate_contracts"
+    validation: "contract_consistency"
+    mode_specific: true
+    on_failure: "abort_with_diagnostic"
+  
+  - step: "validate_mode_compliance"
+    validation:
+      lite: "lite_mode_validations"
+      fullstack: "fullstack_mode_validations"
+    on_failure: "abort_with_diagnostic"
+  
+  - step: "validate_unlock_order"
+    validation: "unlock_order_validation"
+    expected_order: [AE2, AE1, AE3]
+    on_failure: "abort_with_diagnostic"
+    critical: true
+  
+  - step: "initialize_environment"
+    action:
+      lite: "environment_preparation.lite_mode"
+      fullstack: "environment_preparation.fullstack_mode"
+    output: "environment_handles"
+  
+  - step: "initialize_state_store"
+    action: "mode_specific_state_store_init"
+    output: "state_store_handle"
+  
+  - step: "initialize_event_stream"
+    action: "mode_specific_event_stream_init"
+    output: "event_stream_handle"
+    optional_in: [lite]
+    required_in: [fullstack]
+  
+  - step: "initialize_runtime"
+    input: "resolved_mode + kit_config + mode_config"
+    isolation: true
+    output: "runtime_handle"
+  
+  - step: "bind_interfaces"
+    input: "runtime_handle + contexto_host"
+    output: "interface_registry"
+  
+  - step: "start_health_monitoring"
+    interval_ms:
+      lite: 5000
+      fullstack: 1000
+  
+  # ═══════════════════════════════════════════════════════
+  # ORDEM CORRETA: AE2 → AE1 → AE3 (CANONICAL)
+  # ═══════════════════════════════════════════════════════
+  
+  - step: "unlock_AE2"
+    priority: 1
+    reason: "AE1 depends on AE2"
+    condition: "mode_allows_ae2 && validation_passed"
+    atomic: true
+    timeout_ms:
+      lite: 3000
+      fullstack: 8000
+    
+    pre_unlock_checks:
+      lite:
+        - mode_is_lite
+        - minimal_modules_defined
+      
+      fullstack:
+        - mode_is_fullstack
+        - all_8_modules_defined
+        - all_cognitive_contracts_validated
+        - strategic_objectives_defined
+    
+    post_unlock:
+      - update_state_store: { ae2_ready: true }
+      - emit_event: "ae2_initialized"
+      - start_ae2_health_monitoring
+  
+  - step: "unlock_AE1"
+    priority: 2
+    reason: "AE1 requires AE2 operational"
+    condition: "ae2_ready && validation_passed"
+    atomic: true
+    timeout_ms:
+      lite: 3000
+      fullstack: 8000
+    
+    pre_unlock_checks:
+      lite:
+        - ae2_ready
+        - ae2_minimal_modules_operational
+        - state_store_initialized
+      
+      fullstack:
+        - ae2_ready
+        - ae2_all_modules_operational
+        - ae2_cognitive_contracts_active
+        - state_store_connected
+        - persistent_storage_ready
+        - memory_layers_allocated
+        - vectorial_index_initialized
+    
+    post_unlock:
+      - update_state_store: { ae1_ready: true }
+      - emit_event: "ae1_initialized"
+      - start_ae1_health_monitoring
+      - start_cognitive_loop
+  
+  - step: "unlock_AE3"
+    priority: 3
+    reason: "AE3 needs both AE1 and AE2"
+    condition: "ae2_ready && ae1_ready && validation_passed"
+    atomic: true
+    timeout_ms:
+      lite: 3000
+      fullstack: 8000
+    
+    pre_unlock_checks:
+      lite:
+        - ae2_ready
+        - ae1_ready
+        - tools_loaded: 5
+      
+      fullstack:
+        - ae2_ready
+        - ae1_ready
+        - all_tools_loaded: 40+
+        - tool_dependencies_resolved
+        - external_apis_accessible
+    
+    post_unlock:
+      - update_state_store: { ae3_ready: true }
+      - emit_event: "ae3_initialized"
+      - start_ae3_health_monitoring
+  
+  - step: "emit_bootstrap_complete"
+    output: "success_status"
+    summary:
+      - mode: "resolved_mode"
+      - ae2_status: "ready"
+      - ae1_status: "ready"
+      - ae3_status: "ready"
+      - unlock_order: [AE2, AE1, AE3]
+      - mode_compliance: "validated"
+
+# ------------------------------------------------------------
+# Health Checks (Mode-Aware)
+# ------------------------------------------------------------
+
+health:
+  checks:
+    common:
+      - name: "contract_validation_status"
+        interval_ms: 0
+        critical: true
+      
+      - name: "component_responsiveness"
+        interval_ms:
+          lite: 10000
+          fullstack: 5000
+      
+      - name: "unlock_order_integrity"
+        interval_ms: 0
+        check: "AE2 unlocked before AE1, AE1 before AE3"
+        critical: true
+    
+    lite_specific:
+      - name: "memory_footprint"
+        interval_ms: 10000
+        threshold_mb: 50
+        on_exceed: "alert"
+    
+    fullstack_specific:
+      - name: "ae1_module_health"
+        interval_ms: 30000
+        checks:
+          - "all_memory_layers_operational"
+          - "cognitive_loop_healthy"
+          - "no_deadlocks"
+      
+      - name: "ae2_module_health"
+        interval_ms: 30000
+        checks:
+          - "all_8_modules_responsive"
+          - "cognitive_contracts_valid"
+          - "no_module_failures"
+      
+      - name: "ae1_ae2_communication"
+        interval_ms: 60000
+        checks:
+          - "AE1_can_query_AE2"
+          - "AE2_responds_to_AE1"
+        critical: true
+      
+      - name: "external_services"
+        interval_ms: 60000
+        checks:
+          - "persistent_storage_accessible"
+          - "vectorial_backend_accessible"
+          - "event_stream_backend_accessible"
+  
+  watchdogs:
+    - name: "bootstrap_timeout"
+      timeout_ms:
+        lite: 5000
+        fullstack: 18000
+      on_timeout: "abort_with_diagnostic"
+    
+    - name: "unlock_timeout"
+      timeout_ms:
+        lite: 3000
+        fullstack: 8000
+      per_component: true
+      on_timeout: "rollback_unlock"
+
+# ------------------------------------------------------------
+# Observability (Mode-Aware)
+# ------------------------------------------------------------
+
+observability:
+  required_metrics:
+    common:
+      - bootstrap_duration_ms
+      - validation_duration_ms
+      - mode_resolved
+      - unlock_order_validated
+      - contracts_validated_count
+      - health_status
+    
+    lite_specific:
+      - lite_mode_active
+      - modules_enabled: 3
+      - tools_enabled: 5
+    
+    fullstack_specific:
+      - fullstack_mode_active
+      - modules_enabled: 8
+      - tools_enabled: 40+
+      - cognitive_contracts_active: 8
+      - external_services_connected
+  
+  structured_logging:
+    enabled: true
+    format: json
+    level:
+      lite: info
+      fullstack: debug
+    fields:
+      - timestamp
+      - level
+      - component
+      - mode
+      - message
+      - context
+      - trace_id
+  
+  diagnostic_output:
+    on_mode_validation_failure:
+      - which_mode_attempted
+      - which_constraints_violated
+      - mode_requirements_vs_actual
+      - suggested_fixes
+    
+    on_unlock_order_failure:
+      - expected_order: [AE2, AE1, AE3]
+      - actual_order
+      - dependency_graph_snapshot
+
+# ------------------------------------------------------------
+# Princípios de Design (Atualizados)
+# ------------------------------------------------------------
+
+principles:
+  - contrato_acima_de_codigo
+  - falha_antes_da_decisao
+  - bootstrap_sem_inteligencia
+  - isolamento_por_padrao
+  - governanca_antes_da_execucao
+  - reproducibilidade
+  - observabilidade
+  - dependencias_explicitas
+  - mode_awareness  # ← NOVO
+  - unlock_order_correct  # ← NOVO: AE2 → AE1 → AE3
+
+# ------------------------------------------------------------
+# Status
+# ------------------------------------------------------------
+
+status:
+  readiness: "production_ready"
+  governance_level: "soberano"
+  failure_tolerance: "alta"
+  specification_completeness: "completa"
+  mode_awareness: "full"  # ← NOVO
+  unlock_order: "corrected"  # ← NOVO

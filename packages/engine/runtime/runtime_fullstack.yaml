@@ -1,0 +1,84 @@
+# runtime_fullstack.yaml
+runtime:
+  id: arqos-runtime-fullstack
+  version: 2.0.0
+  mode: fullstack
+  environment: production
+  
+  global_timeout:
+    enabled: true
+    timeout_ms: 600000  # 10 min
+  
+ae0:
+  mode: fullstack
+  include: AE0_FULLSTACK_spec
+
+ae1:
+  mode: fullstack
+  include: AE1_FULLSTACK_spec
+  
+  persistence:
+    backend: postgresql
+    connection_string: ${DB_URL}
+
+ae2:
+  mode: fullstack
+  include: AE2_FULLSTACK_spec
+  
+  strategic_objectives:
+    - ${PROJECT_OBJECTIVES}
+
+ae3:
+  mode: fullstack
+  include: AE3_FULLSTACK_spec
+  
+  custom_tools_path: ./custom_tools/
+
+execution_flow:
+  trigger: event_driven
+  validation: comprehensive
+  event_source: ${EVENT_STREAM_URL}
+
+observability:
+  logging:
+    level: debug
+    backend: elk_stack
+  metrics:
+    enabled: true
+    backend: prometheus
+  tracing:
+    enabled: true
+    backend: jaeger
+
+exit_conditions:
+  success:
+    - all_modules_healthy == true
+    - cognitive_loops_stable == true
+```
+
+---
+
+## 🎯 MODE SELECTION DECISION TREE
+```
+START
+  │
+  ├─ Production deployment? ───YES──► FULL-STACK
+  │                                   - All 8 AE2 modules
+  ├─ NO                               - Full memory (3 layers)
+  │                                   - 40+ tools
+  ├─ Complex workflows? ────YES──► FULL-STACK
+  │                                   - Multi-agent coordination
+  ├─ NO                               - Learning enabled
+  │
+  ├─ Need learning? ────────YES──► FULL-STACK
+  │                                   - Pattern detection
+  ├─ NO                               - Heuristic adjustment
+  │
+  ├─ Testing/CI/CD? ────────YES──► AE-LITE
+  │                                   - 3 AE2 modules only
+  ├─ Development? ──────────YES──► AE-LITE
+  │                                   - Short-term memory only
+  ├─ Architecture validation? ─YES──► AE-LITE
+  │                                   - Minimal tools (5)
+  └─ Default ─────────────────────► AE-LITE
+                                      - Fast (<60s)

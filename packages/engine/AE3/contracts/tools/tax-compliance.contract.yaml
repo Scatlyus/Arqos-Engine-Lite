@@ -1,0 +1,50 @@
+# Tool Contract: TaxComplianceSimulator
+contract_id: "tool_t19_tax_compliance_simulator"
+version: "1.0.0"
+
+tool_id: "T19"
+name: "TaxComplianceSimulator"
+description: "Simulate basic tax compliance by jurisdiction with inconsistency flags."
+phase: processa
+
+enabled_in: fullstack
+
+timeout_ms: 4000
+
+input_schema:
+  type: object
+  required: [jurisdiction, tax_year]
+  properties:
+    jurisdiction:
+      type: string
+    tax_year:
+      type: number
+    income:
+      type: object
+    deductions:
+      type: object
+    transactions:
+      type: array
+      items: {}
+    ruleset_version:
+      type: string
+
+output_schema:
+  type: object
+  required: [total_tax]
+  properties:
+    total_tax:
+      type: number
+    breakdown:
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+          amount:
+            type: number
+    flags:
+      type: array
+      items:
+        type: string

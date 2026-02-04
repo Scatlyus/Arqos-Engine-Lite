@@ -1,0 +1,64 @@
+# Tool Contract: HybridSearch
+contract_id: "tool_t8_hybrid_search"
+version: "1.0.0"
+
+tool_id: "T8"
+name: "HybridSearch"
+description: "Hybrid search combining BM25 text search and vector similarity."
+phase: colhe
+
+enabled_in: fullstack
+
+timeout_ms: 4000
+
+input_schema:
+  type: object
+  required: [query]
+  properties:
+    query:
+      type: string
+    top_k:
+      type: number
+    bm25_weight:
+      type: number
+    vector_weight:
+      type: number
+    namespace:
+      type: string
+    filters:
+      type: object
+    candidate_limit:
+      type: number
+    rerank:
+      type: boolean
+
+output_schema:
+  type: object
+  required: [results]
+  properties:
+    results:
+      type: array
+      items:
+        type: object
+        required: [id, score]
+        properties:
+          id:
+            type: string
+          score:
+            type: number
+          sources:
+            type: object
+            properties:
+              bm25:
+                type: number
+              vector:
+                type: number
+          text:
+            type: string
+          metadata:
+            type: object
+    timings_ms:
+      type: object
+
+optional_fields:
+  cache_ttl_seconds: 120

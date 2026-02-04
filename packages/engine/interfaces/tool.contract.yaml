@@ -1,0 +1,20 @@
+contract_id: "tool_contract_v1"
+version: "1.0.0"
+
+provides:
+  - name: tool_definition
+    format: standard
+    frequency: on_request
+    schema:
+      type: object
+      required: [id, name, phase, version]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        phase:
+          type: string
+          enum: [recebe, colhe, processa, fornece]
+        version:
+          type: string

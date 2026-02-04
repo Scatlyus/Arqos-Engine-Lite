@@ -1,0 +1,66 @@
+ae0_fullstack:
+  id: "AE0-FULLSTACK"
+  version: "1.2.0-fullstack"
+  
+  bootstrap:
+    validate_contracts: true
+    validate_schemas: true
+    validate_dependencies: true
+    validate_ae1_modules: true  # ← FULL validation
+    validate_ae1_internal_contracts: true  # ← Check all 8 contracts
+    fail_fast: true
+    timeout_ms: 18000  # ← Extended for full validation
+  
+  event_stream:
+    enabled: true  # ← REQUIRED
+    type: persistent  # ← Can be Redis, Kafka, etc
+    buffer_size: 1000
+    retention_policy: "last_24h"
+    priority_levels: [critical, high, normal, low]
+    dispatch_policy:
+      order: priority_then_fifo
+      allow_starvation: false
+      starvation_threshold: 5
+  
+  health_monitoring:
+    enabled: true
+    heartbeat_interval_ms: 1000  # ← High frequency
+    circuit_breaker:
+      enabled: true
+      failure_threshold: 2
+      recovery_timeout_ms: 10000
+      half_open_after_ms: 15000
+    
+    advanced_checks:
+      - ae1_module_health
+      - ae2_module_health
+      - ae1_ae2_communication
+      - memory_health
+      - cognitive_loop_health
+  
+  unlock_sequence:  # ⚠️ CORRECTED ORDER
+    - component: AE2
+      wait_for_ready: true
+      timeout_ms: 8000
+      pre_unlock_checks:
+        - all_8_modules_validated
+        - contracts_validated
+        - strategic_objectives_defined
+    
+    - component: AE1
+      wait_for_ready: true
+      timeout_ms: 8000
+      pre_unlock_checks:
+        - ae2_operational
+        - ae1_modules_available
+        - ae1_contracts_validated
+        - memory_initialized
+        - state_store_ready
+    
+    - component: AE3
+      wait_for_ready: true
+      timeout_ms: 8000
+      pre_unlock_checks:
+        - ae2_operational
+        - ae1_operational
+        - all_tools_available

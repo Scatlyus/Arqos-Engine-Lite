@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AE3 Tool Contract",
+  "type": "object",
+  "required": [
+    "contract_id",
+    "version",
+    "tool_id",
+    "name",
+    "description",
+    "phase",
+    "input_schema",
+    "output_schema",
+    "timeout_ms"
+  ],
+  "properties": {
+    "contract_id": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "tool_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "phase": {
+      "type": "string",
+      "enum": ["recebe", "colhe", "processa", "fornece"]
+    },
+    "enabled_in": {
+      "type": "string",
+      "enum": ["lite", "fullstack"]
+    },
+    "timeout_ms": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "input_schema": {
+      "type": "object"
+    },
+    "output_schema": {
+      "type": "object"
+    },
+    "optional_fields": {
+      "type": "object",
+      "properties": {
+        "depends_on": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "uses_ae1": {
+          "type": "boolean"
+        },
+        "requires_approval": {
+          "type": "boolean"
+        },
+        "cache_ttl_seconds": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

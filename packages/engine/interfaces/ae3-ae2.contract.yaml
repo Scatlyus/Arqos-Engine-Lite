@@ -1,0 +1,26 @@
+contract_id: "ae3_ae2_execution"
+version: "1.0.0"
+
+receives:
+  - name: orchestration_plan
+    format: json
+    source: AE2
+    purpose: Execution request
+    schema:
+      type: object
+      required: [tool_name, tool_input, timeout]
+
+provides:
+  - name: execution_results
+    format: json
+    frequency: on_request
+    schema:
+      type: object
+      required: [tool_output, success, duration_ms]
+
+  - name: tool_availability
+    format: json
+    frequency: periodic
+    schema:
+      type: object
+      required: [total_tools, available_tools]

@@ -1,0 +1,306 @@
+id: "AE3"
+canonical_id: "AP"
+version: "2.2.0"
+role: "execucao_operacional"
+nature: [operacional, deterministico, toolkit_based, modular]
+
+unlock_priority: 3
+reason_last: "AE3 needs AE2 for orchestration and AE1 for logging"
+
+depends_on:
+  - component: AE0
+    reason: "Requires bootstrap"
+
+  - component: AE2
+    reason: "Receives orchestration commands"
+    unlock_priority: 1
+
+  - component: AE1
+    reason: "Reports execution logs"
+    unlock_priority: 2
+
+orchestrated_by:
+  component: AE2
+  reason: "AE2 decides which tools to use and in what order"
+
+lite:
+  tools:
+    enabled_count: 5
+
+    recebe_phase:
+      - UserIntentParser:
+          id: T1
+          description: "Extract structured intent from user input"
+          timeout_ms: 2000
+          features: minimal
+
+    colhe_phase:
+      - InputValidator:
+          id: T2
+          description: "Basic input validation"
+          timeout_ms: 1000
+          features: [type_checking, required_fields]
+
+    processa_phase:
+      - ChainOfThoughtGenerator:
+          id: T3
+          description: "Basic step-by-step reasoning"
+          timeout_ms: 10000
+          max_depth: 3
+
+      - InsightSummarizer:
+          id: T4
+          description: "Simple text summarization"
+          timeout_ms: 3000
+          max_length: 500_chars
+
+    fornece_phase:
+      - ClauseGeneration:
+          id: T5
+          description: "Simple text generation"
+          timeout_ms: 3000
+          features: [template_based, basic_composition]
+
+  disabled_tools:
+    all_others: true
+    reason: "Minimal toolset for testing/validation only"
+
+  execution_policy:
+    deterministic: true
+    max_concurrent_tools: 1
+    timeout_ms: 20000
+    retry_policy: disabled
+    fallback_policy: fail_fast
+
+  capabilities:
+    multimodal: false
+    ml_based: false
+    external_apis: false
+    complex_processing: false
+    custom_plugins: false
+    hot_reload: false
+
+fullstack:
+  tools:
+    enabled_count: 40+
+
+    recebe_phase:
+      tools:
+        - UserIntentParser
+        - DataAnonymizer
+        - Webhook
+        - HTTPRequest
+        - InputValidator
+
+      capabilities:
+        - intent_extraction
+        - lgpd_compliance
+        - async_inputs
+        - http_handling
+        - validation
+
+    colhe_phase:
+      tools:
+        - ExcelDataProcessor
+        - MarketDataFetcher
+        - HybridSearch
+        - UserProfileManager
+        - EmbeddingLookup
+        - TaskDiagnoser
+        - DataIntegration
+        - DatabaseQuery
+
+      capabilities:
+        - spreadsheet_processing
+        - real_time_data
+        - semantic_search
+        - profile_management
+        - data_validation
+        - multi_source_integration
+
+    processa_phase:
+      tools:
+        - ChainOfThoughtGenerator
+        - FinancialManager
+        - ScenarioSimulator
+        - PricingEngine
+        - InvestmentPlanner
+        - MultimodalSynthesizer
+        - PredictiveOptimizer
+        - TaxComplianceSimulator
+        - InsightSummarizer
+        - DataTransformer
+        - SentimentAnalyzer
+        - PatternMatcher
+        - AnomalyDetector
+
+      capabilities:
+        - advanced_reasoning
+        - financial_coordination
+        - predictive_modeling
+        - dynamic_pricing
+        - portfolio_optimization
+        - multimodal_integration
+        - process_optimization
+        - tax_conformity
+        - sentiment_analysis
+        - anomaly_detection
+
+    fornece_phase:
+      tools:
+        - FeedbackAndAlerting
+        - WebResearchUpdater
+        - ClauseGeneration
+        - Traducao
+        - InsightSummarizer
+        - VersionManager
+        - ReportGenerator
+        - EmailSender
+
+      capabilities:
+        - intelligent_alerts
+        - knowledge_updates
+        - text_generation
+        - multi_language
+        - executive_summaries
+        - artifact_versioning
+        - automated_reporting
+
+  execution_policy:
+    deterministic: false
+    max_concurrent_tools: 10
+    timeout_ms: 60000
+    retry_policy:
+      enabled: true
+      max_retries: 3
+      backoff_strategy: exponential
+    fallback_policy:
+      on_tool_failure: try_alternative
+      rollback: partial
+
+  capabilities:
+    multimodal: true
+    ml_based: true
+    external_apis: true
+    complex_processing: true
+    custom_plugins: true
+    hot_reload: true
+
+  plugin_system:
+    enabled: true
+    registration: dynamic
+    hot_reload: true
+    validation: strict
+
+    supported_plugin_types:
+      - data_connectors
+      - processors
+      - formatters
+      - validators
+      - transformers
+
+    examples:
+      - SARVOSPsychologicalRadar
+      - VetherisgCombatSimulator
+      - OpusVertisRSVPManager
+
+pipeline_architecture:
+  phases:
+    recebe:
+      description: "Input reception and validation"
+      tools_lite: 1
+      tools_fullstack: 5
+      purpose: receive_and_validate
+
+    colhe:
+      description: "Data collection and integration"
+      tools_lite: 1
+      tools_fullstack: 8+
+      purpose: collect_and_integrate
+
+    processa:
+      description: "Transformation and analysis"
+      tools_lite: 2
+      tools_fullstack: 20+
+      purpose: transform_and_analyze
+
+    fornece:
+      description: "Output generation and delivery"
+      tools_lite: 1
+      tools_fullstack: 8+
+      purpose: generate_and_deliver
+
+  flow_control:
+    orchestrated_by: AE2
+    tools_are: stateless_and_composable
+    execution_model:
+      lite: sequential_only
+      fullstack: parallel_where_possible
+
+integration_with_ae2:
+  receives:
+    lite:
+      - orchestration_plan:
+          format: simplified
+          contains: [tool_name, tool_input, timeout]
+
+    fullstack:
+      - orchestration_plan:
+          format: comprehensive
+          contains:
+            - tool_sequence
+            - dependencies
+            - timeout_budget
+            - rollback_policy
+            - priority
+
+      - execution_context:
+          format: rich
+          contains:
+            - user_context
+            - cognitive_context
+            - strategic_directives
+
+  provides:
+    lite:
+      - execution_results:
+          format: simple
+          contains: [tool_output, success, duration_ms]
+
+    fullstack:
+      - execution_results:
+          format: comprehensive
+          contains:
+            - outputs
+            - performance_metrics
+            - errors
+            - warnings
+            - partial_results
+
+      - tool_availability:
+          format: real_time
+          contains:
+            - tool_health_status
+            - load_metrics
+            - estimated_latency
+
+integration_with_ae1:
+  provides:
+    common:
+      - execution_logs:
+          format:
+            lite: basic
+            fullstack: detailed
+          frequency: on_complete
+          contains:
+            lite: [tool_name, input, output, duration_ms, success]
+            fullstack: [tool_invocations, inputs, outputs, duration, errors, warnings]
+
+guarantees:
+  - execucao_deterministiva
+  - ferramentas_isoladas
+  - resultados_auditaveis
+  - rollback_possivel
+  - extensibilidade_controlada
+  - sem_decisoes
+  - orquestrado_apenas

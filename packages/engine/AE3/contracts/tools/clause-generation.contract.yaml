@@ -1,0 +1,40 @@
+# Tool Contract: ClauseGeneration
+contract_id: "tool_t5_clause_generation"
+version: "1.0.0"
+
+tool_id: "T5"
+name: "ClauseGeneration"
+description: "Generate clause text from templates with variable validation."
+phase: fornece
+
+enabled_in: fullstack
+
+timeout_ms: 2500
+
+input_schema:
+  type: object
+  required: [template]
+  properties:
+    template:
+      type: string
+    template_id:
+      type: string
+    variables:
+      type: object
+    locale:
+      type: string
+    tone:
+      type: string
+
+output_schema:
+  type: object
+  required: [clause_text]
+  properties:
+    clause_text:
+      type: string
+    missing_variables:
+      type: array
+      items:
+        type: string
+    version:
+      type: string

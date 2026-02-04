@@ -1,0 +1,71 @@
+# Tool Contract: DatabaseQuery
+contract_id: "tool_t25_database_query"
+version: "1.0.0"
+
+tool_id: "T25"
+name: "DatabaseQuery"
+description: "Database CRUD operations with transactions, prepared statements, pooling, and timeouts."
+phase: colhe
+
+enabled_in: fullstack
+
+timeout_ms: 5000
+
+input_schema:
+  type: object
+  required: [operation, query]
+  properties:
+    operation:
+      type: string
+      enum: [select, insert, update, delete, execute]
+    query:
+      type: string
+    params:
+      type: array
+      items: {}
+    connection:
+      type: object
+      required: [provider]
+      properties:
+        provider:
+          type: string
+          enum: [postgres, mysql, sqlite]
+        host:
+          type: string
+        port:
+          type: number
+        database:
+          type: string
+        user:
+          type: string
+        password:
+          type: string
+        ssl:
+          type: boolean
+    transaction:
+      type: boolean
+    max_rows:
+      type: number
+    timeout_ms:
+      type: number
+
+output_schema:
+  type: object
+  required: [rows, row_count]
+  properties:
+    rows:
+      type: array
+      items: {}
+    row_count:
+      type: number
+    affected_rows:
+      type: number
+    columns:
+      type: array
+      items:
+        type: string
+    execution_time_ms:
+      type: number
+
+optional_fields:
+  requires_approval: true

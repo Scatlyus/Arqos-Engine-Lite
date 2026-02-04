@@ -1,0 +1,52 @@
+# Tool Contract: PricingEngine
+contract_id: "tool_t15_pricing_engine"
+version: "1.0.0"
+
+tool_id: "T15"
+name: "PricingEngine"
+description: "Compute pricing based on rules, demand, elasticity, and constraints."
+phase: processa
+
+enabled_in: fullstack
+
+timeout_ms: 2500
+
+input_schema:
+  type: object
+  required: [base_price]
+  properties:
+    base_price:
+      type: number
+    costs:
+      type: object
+    demand:
+      type: object
+    elasticity:
+      type: number
+    constraints:
+      type: object
+      properties:
+        min:
+          type: number
+        max:
+          type: number
+    rules:
+      type: array
+      items: {}
+    scenario:
+      type: string
+
+output_schema:
+  type: object
+  required: [price]
+  properties:
+    price:
+      type: number
+    components:
+      type: object
+    rationale:
+      type: array
+      items:
+        type: string
+    sensitivity:
+      type: object

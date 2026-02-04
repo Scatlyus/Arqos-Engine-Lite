@@ -1,0 +1,20 @@
+id: "AE0"
+canonical_id: "AH"
+version: "1.3.0"
+role: "bootstrap_e_acoplamento"
+nature: [operacional, deterministico, nao_cognitivo]
+
+bootstrap:
+  validate_contracts: true
+  validate_schemas: true
+  fail_fast: true
+
+unlock_sequence:
+  order: [AE2, AE1, AE3]
+
+guarantees:
+  - subida_controlada
+  - contratos_validos
+  - isolamento_cognitivo
+  - falha_segura
+  - ordem_unlock_correta

@@ -1,0 +1,62 @@
+# Tool Contract: PredictiveOptimizer
+contract_id: "tool_t18_predictive_optimizer"
+version: "1.0.0"
+
+tool_id: "T18"
+name: "PredictiveOptimizer"
+description: "Optimize objective under constraints with heuristic/greedy methods."
+phase: processa
+
+enabled_in: fullstack
+
+timeout_ms: 4000
+
+input_schema:
+  type: object
+  required: [objective, variables]
+  properties:
+    objective:
+      type: object
+      required: [type]
+      properties:
+        type:
+          type: string
+          enum: [minimize, maximize]
+        expression:
+          type: string
+    variables:
+      type: array
+      items:
+        type: object
+        required: [name]
+        properties:
+          name:
+            type: string
+          min:
+            type: number
+          max:
+            type: number
+    constraints:
+      type: array
+      items:
+        type: object
+    method:
+      type: string
+      enum: [greedy, heuristic]
+    iterations:
+      type: number
+
+output_schema:
+  type: object
+  required: [best_solution]
+  properties:
+    best_solution:
+      type: object
+    score:
+      type: number
+    iterations:
+      type: number
+    tradeoffs:
+      type: array
+      items:
+        type: string

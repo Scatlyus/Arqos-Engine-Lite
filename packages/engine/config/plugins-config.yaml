@@ -1,0 +1,5 @@
+plugins_config:
+  enabled: true
+  directory: ./AE3/plugins/custom-tools
+  hot_reload: true
+  validation_strict: true

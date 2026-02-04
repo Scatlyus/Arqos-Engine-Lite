@@ -1,0 +1,8 @@
+tools_config:
+  mode: fullstack
+  receive_phase:
+    - UserIntentParser
+    - DataAnonymizer
+  process_phase:
+    - ChainOfThoughtGenerator
+    - InsightSummarizer

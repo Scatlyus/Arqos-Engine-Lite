@@ -1,0 +1,64 @@
+# Tool Contract: PatternMatcher
+contract_id: "tool_t28_pattern_matcher"
+version: "1.0.0"
+
+tool_id: "T28"
+name: "PatternMatcher"
+description: "Match regex/templates in text with scoring and highlights."
+phase: processa
+
+enabled_in: fullstack
+
+timeout_ms: 2000
+
+input_schema:
+  type: object
+  required: [text, patterns]
+  properties:
+    text:
+      type: string
+    patterns:
+      type: array
+      items:
+        type: object
+        required: [id, pattern]
+        properties:
+          id:
+            type: string
+          pattern:
+            type: string
+          type:
+            type: string
+            enum: [regex, template]
+    options:
+      type: object
+      properties:
+        case_sensitive:
+          type: boolean
+        multiline:
+          type: boolean
+    max_matches:
+      type: number
+
+output_schema:
+  type: object
+  required: [matches, count]
+  properties:
+    matches:
+      type: array
+      items:
+        type: object
+        required: [pattern_id, start, end]
+        properties:
+          pattern_id:
+            type: string
+          start:
+            type: number
+          end:
+            type: number
+          text:
+            type: string
+          score:
+            type: number
+    count:
+      type: number

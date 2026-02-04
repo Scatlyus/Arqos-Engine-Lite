@@ -1,0 +1,94 @@
+id: "AE1"
+canonical_id: "AD"
+version: "2.2.0"
+role: "cognicao_adaptativa"
+nature: [cognitivo, experiencial, reflexivo, pos_operacional]
+
+depends_on:
+  - component: AE0
+    reason: "Requires bootstrap and validation"
+  - component: AE2
+    reason: "Needs strategic context before initialization"
+
+lite:
+  state_store:
+    type: in_memory
+    persist_on_exit: false
+
+  memory:
+    layers:
+      short_term:
+        enabled: true
+        retention_days: 7
+        storage: in_memory
+
+      long_term:
+        enabled: false
+
+      vectorial:
+        enabled: false
+
+  cognition_loop:
+    enabled: true
+    frequency: on_demand
+    phases: [observe, reflect]
+
+  pattern_detection:
+    algorithms: [statistical, rule_based]
+    ml_based: false
+
+  learning:
+    enabled: false
+
+  heuristics:
+    suggestions: minimal
+    auto_apply: false
+
+fullstack:
+  state_store:
+    type: persistent
+    backend: postgresql
+    persist_on_exit: true
+
+  memory:
+    layers:
+      short_term:
+        enabled: true
+        retention_days: 7
+        storage: postgresql
+
+      long_term:
+        enabled: true
+        retention_days: 180
+        storage: postgresql
+
+      vectorial:
+        enabled: true
+        backend: pinecone
+        dimensions: 1536
+
+  cognition_loop:
+    enabled: true
+    frequency: continuous
+    phases: [observe, reflect, abstract, suggest]
+
+  pattern_detection:
+    algorithms: [statistical, ml_based, rule_based]
+    ml_based: true
+
+  learning:
+    enabled: true
+    versioning: semantic
+    rollback: automatic_on_degradation
+
+  heuristics:
+    suggestions: comprehensive
+    auto_apply: false
+    requires_ae2_approval: true
+
+guarantees:
+  - aprendizado_pos_execucao_apenas
+  - sem_mudancas_cegas
+  - memoria_versionada
+  - heuristicas_auditaveis
+  - capacidade_rollback

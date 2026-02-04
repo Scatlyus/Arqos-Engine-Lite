@@ -1,0 +1,67 @@
+ae3_configuration:
+  mode: fullstack
+
+  execution:
+    max_concurrent_tools: 10
+    default_timeout_ms: 30000
+    retry_enabled: true
+    max_retries: 3
+    backoff_strategy: exponential
+
+  tools:
+    recebe:
+      UserIntentParser:
+        enabled: true
+        timeout_ms: 2000
+
+      DataAnonymizer:
+        enabled: true
+        timeout_ms: 3000
+        lgpd_mode: strict
+
+    colhe:
+      ExcelDataProcessor:
+        enabled: true
+        max_file_size_mb: 50
+        timeout_ms: 10000
+
+      MarketDataFetcher:
+        enabled: true
+        provider: alpha_vantage
+        api_key: ${ALPHA_VANTAGE_KEY}
+
+    processa:
+      ChainOfThoughtGenerator:
+        enabled: true
+        max_depth:
+          lite: 3
+          fullstack: 10
+        timeout_ms:
+          lite: 10000
+          fullstack: 30000
+        llm_provider: anthropic
+        model: claude-sonnet-4
+
+      FinancialManager:
+        enabled: true
+        supported_operations:
+          - portfolio_analysis
+          - risk_assessment
+          - tax_optimization
+
+    fornece:
+      ClauseGeneration:
+        enabled: true
+        templates_dir: ./templates
+        max_output_length: 5000
+
+  plugins:
+    enabled: true
+    directory: ./AE3/plugins/custom-tools
+    hot_reload: true
+    validation_strict: true
+
+    allowed_custom_tools:
+      - SARVOSPsychologicalRadar
+      - VetherisgCombatSimulator
+      - OpusVertisRSVPManager

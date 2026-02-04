@@ -1,0 +1,75 @@
+# Tool Contract: FinancialManager
+contract_id: "tool_t13_financial_manager"
+version: "1.0.0"
+
+tool_id: "T13"
+name: "FinancialManager"
+description: "Aggregate finances, budgets, and projections with categorization rules."
+phase: processa
+
+enabled_in: fullstack
+
+timeout_ms: 3000
+
+input_schema:
+  type: object
+  required: [transactions]
+  properties:
+    transactions:
+      type: array
+      items:
+        type: object
+        required: [date, amount, type]
+        properties:
+          date:
+            type: string
+          amount:
+            type: number
+          type:
+            type: string
+            enum: [income, expense]
+          category:
+            type: string
+          description:
+            type: string
+    budgets:
+      type: array
+      items:
+        type: object
+        properties:
+          category:
+            type: string
+          limit:
+            type: number
+    rules:
+      type: array
+      items: {}
+    currency:
+      type: string
+
+output_schema:
+  type: object
+  required: [summary]
+  properties:
+    summary:
+      type: object
+      properties:
+        income:
+          type: number
+        expense:
+          type: number
+        net:
+          type: number
+    category_breakdown:
+      type: array
+      items:
+        type: object
+        properties:
+          category:
+            type: string
+          total:
+            type: number
+    alerts:
+      type: array
+      items:
+        type: string

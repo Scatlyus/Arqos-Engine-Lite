@@ -1,0 +1,16 @@
+project:
+  name: "SARVOS"
+  version: "1.0.0"
+
+arqos:
+  mode: fullstack
+
+  components:
+    - harbor: ^1.3.0
+    - dnabase: ^2.2.0
+    - strategos: ^2.3.0
+    - pipeline: ^2.2.0
+
+  custom_agents:
+    - Guardian
+    - Sage

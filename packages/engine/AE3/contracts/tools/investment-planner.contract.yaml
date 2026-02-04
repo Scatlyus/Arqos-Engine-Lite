@@ -1,0 +1,62 @@
+# Tool Contract: InvestmentPlanner
+contract_id: "tool_t16_investment_planner"
+version: "1.0.0"
+
+tool_id: "T16"
+name: "InvestmentPlanner"
+description: "Portfolio allocation with risk profile, constraints, and rebalancing plan."
+phase: processa
+
+enabled_in: fullstack
+
+timeout_ms: 4000
+
+input_schema:
+  type: object
+  required: [profile, capital]
+  properties:
+    profile:
+      type: object
+      required: [risk]
+      properties:
+        risk:
+          type: string
+          enum: [conservative, balanced, aggressive]
+        horizon_months:
+          type: number
+    capital:
+      type: number
+    constraints:
+      type: object
+    preferences:
+      type: object
+    market_assumptions:
+      type: object
+
+output_schema:
+  type: object
+  required: [allocation]
+  properties:
+    allocation:
+      type: array
+      items:
+        type: object
+        required: [asset, weight]
+        properties:
+          asset:
+            type: string
+          weight:
+            type: number
+    metrics:
+      type: object
+      properties:
+        expected_return:
+          type: number
+        volatility:
+          type: number
+        sharpe:
+          type: number
+        drawdown:
+          type: number
+    rebalance_plan:
+      type: object

@@ -1,0 +1,195 @@
+id: "AE2"
+canonical_id: "SM"
+version: "2.3.0"
+role: "orquestracao_estrategica"
+nature: [estrategico, metacognitivo, adaptativo]
+
+unlock_priority: 1
+reason_first: "AE1 requires strategic context from AE2 before initialization"
+
+depends_on:
+  - component: AE0
+    reason: "Requires bootstrap and contract validation"
+
+lite:
+  modules:
+    enabled_count: 3
+
+    enabled_modules:
+      - id: M1
+        name: strategic_core
+        role: goal_alignment_and_planning
+        required: true
+
+      - id: M2
+        name: internal_orchestrator
+        role: module_coordination
+        required: true
+
+      - id: M3
+        name: decision_auditor
+        role: decision_logging
+        required: true
+
+    disabled_modules:
+      - distributed_execution_manager
+      - contextual_awareness
+      - predictive_optimization
+      - self_reflection
+      - evolution_manager
+
+  cognitive_contracts:
+    enabled: false
+    reason: "Minimal module interaction in lite mode"
+
+  decision_policy:
+    complexity: minimal
+    deterministic: true
+    timeout_ms: 3000
+    max_depth: 2
+    strategies: [rule_based]
+
+  orchestration:
+    model: legacy
+    complexity: simple
+    parallel_execution: false
+
+fullstack:
+  modules:
+    enabled_count: 8
+
+    enabled_modules:
+      - id: M1
+        name: strategic_core
+        role: goal_alignment_planning_objectives
+
+      - id: M2
+        name: internal_orchestrator
+        role: module_coordination_workflow
+
+      - id: M3
+        name: decision_auditor
+        role: logging_compliance_traceability
+
+      - id: M4
+        name: distributed_execution_manager
+        role: agent_dispatch_load_balancing
+
+      - id: M5
+        name: contextual_awareness
+        role: environment_analysis_situation_assessment
+
+      - id: M6
+        name: predictive_optimization
+        role: scenario_simulation_outcome_prediction
+
+      - id: M7
+        name: self_reflection
+        role: decision_review_strategy_refinement
+
+      - id: M8
+        name: evolution_manager
+        role: auto_versioning_capability_upgrade
+
+  cognitive_contracts:
+    enabled: true
+    count: 8
+
+    contracts:
+      - id: C1
+        between: [M1_strategic_core, M2_internal_orchestrator]
+        purpose: strategic_to_orchestration
+
+      - id: C2
+        between: [M2_internal_orchestrator, M3_decision_auditor]
+        purpose: orchestration_to_audit
+
+      - id: C3
+        between: [M2_internal_orchestrator, M4_distributed_execution]
+        purpose: orchestration_to_execution
+
+      - id: C4
+        between: [M1_strategic_core, M5_contextual_awareness]
+        purpose: strategy_with_context
+
+      - id: C5
+        between: [M1_strategic_core, M6_predictive_optimization]
+        purpose: strategy_with_prediction
+
+      - id: C6
+        between: [M2_internal_orchestrator, M7_self_reflection]
+        purpose: orchestration_with_reflection
+
+      - id: C7
+        between: [M1_strategic_core, M8_evolution_manager]
+        purpose: strategy_evolution
+
+      - id: C8
+        between: [M3_decision_auditor, M8_evolution_manager]
+        purpose: audit_to_evolution
+
+  decision_policy:
+    complexity: adaptive
+    deterministic: false
+    timeout_ms: 15000
+    max_depth: unlimited
+    strategies: [rule_based, ml_based, hybrid, consensus, weighted_voting]
+
+  orchestration:
+    model: internal_flow
+    complexity: advanced
+    parallel_execution: true
+    load_balancing: true
+
+integration_with_ae1:
+  provides_to_ae1:
+    lite:
+      - basic_orchestration_context
+
+    fullstack:
+      - strategic_directives
+      - learning_constraints
+      - decision_traces
+
+  receives_from_ae1:
+    lite:
+      - basic_context
+
+    fullstack:
+      - cognitive_context
+      - risk_indicators
+      - heuristic_suggestions
+      - learning_metrics
+      - pattern_insights
+
+integration_with_ae3:
+  provides_to_ae3:
+    lite:
+      - name: basic_orchestration_plan
+        format: simplified
+        contains: [tool_name, tool_input, timeout]
+
+    fullstack:
+      - name: orchestration_plan
+        format: comprehensive
+        contains:
+          - tool_sequence
+          - dependencies
+          - timeout_budget
+          - rollback_policy
+          - priority
+
+      - name: execution_context
+        format: rich
+
+  receives_from_ae3:
+    common:
+      - execution_results
+      - tool_availability
+
+guarantees:
+  - decisao_sem_execucao
+  - orquestracao_sem_acoplamento
+  - estrategia_sem_conhecimento
+  - auditoria_completa
+  - cognitive_contracts_validated

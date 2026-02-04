@@ -1,0 +1,53 @@
+ae1_lite:
+  id: "AE1-LITE"
+  version: "2.1.0-lite"
+  
+  state_store:
+    type: in_memory
+    initial_state: minimal
+    persist_on_exit: false
+    schema:
+      mode: "lite"
+      ae0_ready: false
+      ae1_ready: false
+      ae2_ready: false
+      ae3_ready: false
+  
+  memory:
+    short_term:
+      enabled: true
+      retention: 1_day
+      size_limit: 5_MB
+      stores:
+        - event_history
+        - decision_history
+        - execution_history
+    
+    long_term:
+      enabled: false
+      reason: "Not needed for testing"
+    
+    vectorial:
+      enabled: false
+      reason: "Not needed for minimal runtime"
+  
+  cognition_loop:
+    enabled: true
+    phases:
+      - observe
+      - reflect
+      - suggest  # ← NO abstraction or learning
+    timeout_per_cycle_ms: 3000
+    max_cycles_per_execution: 1
+  
+  learning:
+    enabled: false
+    heuristic_adjustment: false
+    pattern_detection: false
+    bias_detection: false
+  
+  guarantees:
+    post_execution_only: true
+    no_policy_enforcement: true
+    no_strategic_decisions: true
+    no_autonomous_learning: true
